@@ -4,36 +4,136 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private CharacterController cc;
-
-    private Vector3 moveDir;
+    private CharacterController CC;
 
     private GameObject cam;
-    private GameObject groundCheck;
 
-    private float y;
-    private float x;
+    [SerializeField] private float speed = 6f;
+    [SerializeField] private float speedNurf = 10f;
+
+    [SerializeField] private float jumpHeight = 3f;
+
+    //gravity
+    private bool isGrounded = false;
+
+    private Vector3 velocity;
+
+    [SerializeField] private float gravity = -9.81f;
+
+    // camera
+    private float xRotation;
+    [SerializeField] private float sensitivity = 1f;
+
 
     // Start is called before the first frame update
     void Start()
     {
-        cc = GetComponent<CharacterController>();
-        cam = transform.Find("Camera").gameObject;
+        CC = GetComponent<CharacterController>();
+        cam = transform.Find("Camera Holder").gameObject;
+
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
     void Update()
     {
-        moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+        float x = Input.GetAxisRaw("Horizontal");
+        float z = Input.GetAxisRaw("Vertical");
 
-        cc.SimpleMove(moveDir * 4f);
+        Vector3 move = transform.right * x + transform.forward * z;
+
+        //move /= speedNurf;
+
+        if (Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.LeftControl))
+            CC.Move(move.normalized / 2 * speed * Time.smoothDeltaTime);
+        else if (!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.LeftControl))
+            CC.Move(move.normalized * speed * Time.smoothDeltaTime);
+        else if (!Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
+            CC.Move(move.normalized / 2 * speed * Time.smoothDeltaTime);
+        else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
+            CC.Move(move.normalized / 4 * speed * Time.smoothDeltaTime);
+        else
+            Debug.LogError("character vars not set");
+
+        if (Input.GetKey(KeyCode.LeftControl)) // REPLACE WITH TIME OTHERWISE ISSUES WILL OCCUR
+            transform.localScale = new Vector3(transform.localScale.x, Mathf.Lerp(transform.localScale.y, 0.5f, transform.localScale.y * 0.2f), transform.localScale.z);
+        else
+            transform.localScale = new Vector3(transform.localScale.x, Mathf.Lerp(transform.localScale.y, 1f, transform.localScale.y * 0.2f), transform.localScale.z);
+
+        // player jump
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+
+        }
+
+        // gravity
+        if (isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
+
+        velocity.y += gravity * Time.deltaTime;
+
+        CC.Move(velocity * Time.deltaTime);
+
+        //Camera
+        float mouseX = Input.GetAxisRaw("Mouse X") * sensitivity;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * sensitivity;
 
 
-        y -= Input.GetAxisRaw("Mouse Y") * 1f;
-        x += Input.GetAxisRaw("Mouse X") * 1f;
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        cc.transform.rotation = Quaternion.Euler(0, x, 0);
-        cam.transform.localRotation = Quaternion.Euler(Mathf.Clamp(y, -90f, 90f), 0, 0);
 
+        transform.Rotate(Vector3.up * mouseX);
+        cam.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+
+        // ground check
+        // RaycastHit hit;
+        // float extention;
+
+        isGrounded = CC.isGrounded;
+
+        // Physics.Raycast(transform.position, Vector3.down, out hit, CC.height / 2 + 0.5f);
+        // if (hit.normal != Vector3.up)
+        //     extention = maxDistance;
+        // else
+        //     extention = minDistance;
+
+        // isGrounded = Physics.Raycast(transform.position, Vector3.down, CC.height / 2 + extention);
+
+
+        // Vector3 groundCheckPos = CC.center - new Vector3(0, CC.height, 0);
+
+        // RaycastHit hit;
+
+        // isGrounded = Physics.CheckSphere(groundCheckPos, CC.radius - 0.05f);
+        // if (Physics.SphereCast(groundCheckPos, CC.radius - 0.05f, -transform.up, out hit, CC.radius - 0.05f))
+        // {
+        //     if (hit.transform.gameObject == gameObject)
+        //         isGrounded = false;
+        // }
+
+        RaycastHit Ihit;
+        bool wasHit = Physics.Raycast(cam.transform.position, cam.transform.forward, out Ihit, 1.8f);
+
+        if (wasHit)
+        {
+            IInteractable? Iinteract = Ihit.collider.gameObject.GetComponent<IInteractable>();
+            if (Iinteract != null)
+            {
+                Ihit.collider.gameObject.GetComponent<IInteractable>()?.lookingAt();
+                if (Input.GetKeyDown(KeyCode.F))
+                {
+                    Ihit.collider.gameObject.GetComponent<IInteractable>()?.RunInteract();
+                }
+            }
+        }
+    }
+
+    public void SetGrounded(bool _isGrounded)
+    {
+        isGrounded = _isGrounded;
     }
 }
