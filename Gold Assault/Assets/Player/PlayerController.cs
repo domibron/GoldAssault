@@ -9,7 +9,6 @@ public class PlayerController : MonoBehaviour
     private GameObject cam;
 
     [SerializeField] private float speed = 6f;
-    [SerializeField] private float speedNurf = 10f;
 
     [SerializeField] private float jumpHeight = 3f;
 
@@ -44,16 +43,27 @@ public class PlayerController : MonoBehaviour
 
         //move /= speedNurf;
 
+        // this is to check if the player is holding shift bit not left control.
         if (Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.LeftControl))
             CC.Move(move.normalized / 2 * speed * Time.smoothDeltaTime);
+
+        // this is to check if the player is not holding both keys.
         else if (!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.LeftControl))
             CC.Move(move.normalized * speed * Time.smoothDeltaTime);
+
+        // this is to check if the player is just holding left control.
         else if (!Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
             CC.Move(move.normalized / 2 * speed * Time.smoothDeltaTime);
+
+        //this is to check if the player is holding both keys.
         else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
             CC.Move(move.normalized / 4 * speed * Time.smoothDeltaTime);
+
+        // this is to catch and unpinplimented checks.
         else
             Debug.LogError("character vars not set");
+
+
 
         if (Input.GetKey(KeyCode.LeftControl)) // REPLACE WITH TIME OTHERWISE ISSUES WILL OCCUR
             transform.localScale = new Vector3(transform.localScale.x, Mathf.Lerp(transform.localScale.y, 0.5f, transform.localScale.y * 0.2f), transform.localScale.z);
@@ -90,10 +100,12 @@ public class PlayerController : MonoBehaviour
         cam.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
 
         // ground check
+        isGrounded = CC.isGrounded;
+
+
         // RaycastHit hit;
         // float extention;
 
-        isGrounded = CC.isGrounded;
 
         // Physics.Raycast(transform.position, Vector3.down, out hit, CC.height / 2 + 0.5f);
         // if (hit.normal != Vector3.up)
@@ -115,18 +127,21 @@ public class PlayerController : MonoBehaviour
         //         isGrounded = false;
         // }
 
+
+        // Interactions
+
         RaycastHit Ihit;
-        bool wasHit = Physics.Raycast(cam.transform.position, cam.transform.forward, out Ihit, 1.8f);
+        bool wasHit = Physics.Raycast(cam.transform.position, cam.transform.forward, out Ihit, 2.2f);
 
         if (wasHit)
         {
             IInteractable? Iinteract = Ihit.collider.gameObject.GetComponent<IInteractable>();
             if (Iinteract != null)
             {
-                Ihit.collider.gameObject.GetComponent<IInteractable>()?.lookingAt();
+                Iinteract.lookingAt();
                 if (Input.GetKeyDown(KeyCode.F))
                 {
-                    Ihit.collider.gameObject.GetComponent<IInteractable>()?.RunInteract();
+                    Iinteract.RunInteract();
                 }
             }
         }
