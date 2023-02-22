@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Ground : MonoBehaviour
 {
+    // THIS SCRIPT DOES NOT WORK WITH A CHARACTER COTROLLER AS THERE ARE NOT COLLIDERS OR RIGIDBODIES.
+
     private PlayerController pc;
 
     // Start is called before the first frame update

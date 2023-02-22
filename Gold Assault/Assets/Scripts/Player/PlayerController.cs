@@ -66,19 +66,20 @@ public class PlayerController : MonoBehaviour
 
 
         if (Input.GetKey(KeyCode.LeftControl)) // REPLACE WITH TIME OTHERWISE ISSUES WILL OCCUR
-            transform.localScale = new Vector3(transform.localScale.x, Mathf.Lerp(transform.localScale.y, 0.5f, transform.localScale.y * 0.2f), transform.localScale.z);
+            transform.localScale = new Vector3(transform.localScale.x,
+            Mathf.Lerp(transform.localScale.y, 0.5f, transform.localScale.y * 0.2f), transform.localScale.z);
         else
-            transform.localScale = new Vector3(transform.localScale.x, Mathf.Lerp(transform.localScale.y, 1f, transform.localScale.y * 0.2f), transform.localScale.z);
+            transform.localScale = new Vector3(transform.localScale.x,
+            Mathf.Lerp(transform.localScale.y, 1f, transform.localScale.y * 0.2f), transform.localScale.z);
 
         // player jump
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-
         }
 
         // gravity
-        if (isGrounded && velocity.y < 0)
+        if (CC.isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
         }
@@ -100,7 +101,7 @@ public class PlayerController : MonoBehaviour
         cam.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
 
         // ground check
-        isGrounded = CC.isGrounded;
+        //isGrounded = CC.isGrounded;
 
 
         // RaycastHit hit;
