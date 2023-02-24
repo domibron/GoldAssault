@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour
     private float xRotation;
     [SerializeField] private float sensitivity = 1f;
 
+    [SerializeField] private GameObject groundCheck;
+
 
     // Start is called before the first frame update
     void Start()
@@ -79,12 +81,15 @@ public class PlayerController : MonoBehaviour
         }
 
         // gravity
-        if (CC.isGrounded && velocity.y < 0)
+        if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
         }
+        else
+        {
+            velocity.y += gravity * Time.deltaTime;
+        }
 
-        velocity.y += gravity * Time.deltaTime;
 
         CC.Move(velocity * Time.deltaTime);
 
@@ -100,8 +105,10 @@ public class PlayerController : MonoBehaviour
         transform.Rotate(Vector3.up * mouseX);
         cam.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
 
+        // isGrounded = Physics.CheckSphere(groundCheck.transform.position, CC.radius - 0.05f, 3);
+
         // ground check
-        //isGrounded = CC.isGrounded;
+        isGrounded = CC.isGrounded;
 
 
         // RaycastHit hit;
@@ -121,11 +128,20 @@ public class PlayerController : MonoBehaviour
 
         // RaycastHit hit;
 
-        // isGrounded = Physics.CheckSphere(groundCheckPos, CC.radius - 0.05f);
-        // if (Physics.SphereCast(groundCheckPos, CC.radius - 0.05f, -transform.up, out hit, CC.radius - 0.05f))
+        // isGrounded = Physics.CheckSphere(groundCheck.transform.position, CC.radius - 0.05f);
+        // if (Physics.SphereCast(groundCheck.transform.position, CC.radius - 0.05f, -transform.up, out hit, CC.radius - 0.05f))
         // {
-        //     if (hit.transform.gameObject == gameObject)
+        //     print("yes");
+        //     if (hit.transform.gameObject.layer == 3)
+        //     {
+        //         isGrounded = true;
+        //         print("ground");
+        //     }
+        //     else
+        //     {
         //         isGrounded = false;
+        //         print("failed ground");
+        //     }
         // }
 
 
