@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Interface.IInteractable;
 
 public class PlayerController : MonoBehaviour
 {
@@ -47,7 +48,7 @@ public class PlayerController : MonoBehaviour
 
         // this is to check if the player is holding shift bit not left control.
         if (Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.LeftControl))
-            CC.Move(move.normalized / 2 * speed * Time.smoothDeltaTime);
+            CC.Move(move.normalized * 2 * speed * Time.smoothDeltaTime);
 
         // this is to check if the player is not holding both keys.
         else if (!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.LeftControl))
@@ -59,7 +60,7 @@ public class PlayerController : MonoBehaviour
 
         //this is to check if the player is holding both keys.
         else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
-            CC.Move(move.normalized / 4 * speed * Time.smoothDeltaTime);
+            CC.Move(move.normalized / 1.5f * speed * Time.smoothDeltaTime);
 
         // this is to catch and unpinplimented checks.
         else
@@ -150,16 +151,12 @@ public class PlayerController : MonoBehaviour
         RaycastHit Ihit;
         bool wasHit = Physics.Raycast(cam.transform.position, cam.transform.forward, out Ihit, 2.2f);
 
-        if (wasHit)
+        if (wasHit && Ihit.collider.gameObject.GetComponent<IInteractable>() != null)
         {
-            IInteractable? Iinteract = Ihit.collider.gameObject.GetComponent<IInteractable>();
-            if (Iinteract != null)
+            Ihit.collider.gameObject.GetComponent<IInteractable>().lookingAt();
+            if (Input.GetKeyDown(KeyCode.F))
             {
-                Iinteract.lookingAt();
-                if (Input.GetKeyDown(KeyCode.F))
-                {
-                    Iinteract.RunInteract();
-                }
+                Ihit.collider.gameObject.GetComponent<IInteractable>().RunInteract();
             }
         }
     }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Interface.IInteractable;
 
 public class MoveObject : MonoBehaviour, IInteractable
 {
