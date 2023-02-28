@@ -83,7 +83,7 @@ public class AutomaticGun : Gun
     {
         StopCoroutine(Reload());
 
-        if (Time.time < TimeUntilNextFire || isReloading) // fire rate.
+        if (Time.time < TimeUntilNextFire || isReloading || currentAmmo <= 0)
         {
             return;
         }
@@ -103,7 +103,7 @@ public class AutomaticGun : Gun
             if (hit.collider.gameObject.layer == 8)
             {
                 Wall wall = hit.collider.gameObject.GetComponent<Wall>();
-                wall.AddBulletHole(ray, 0.4f);
+                wall.AddBulletHole(ray, 0.1f);
                 print("yes2");
             }
 

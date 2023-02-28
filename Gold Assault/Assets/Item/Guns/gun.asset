@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemName: gun
   damage: 10
-  fireRate: 2
-  reloadSpeed: 2
+  fireRate: 20
+  reloadSpeed: 0.5
   maxAmmoInClip: 31
   maxAmmoInReserve: 99999
