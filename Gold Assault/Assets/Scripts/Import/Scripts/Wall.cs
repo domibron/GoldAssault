@@ -174,6 +174,16 @@ public class Wall : MonoBehaviour
         }
         lastJobHandle.Complete();
 
+        string x;
+        x = "list: ";
+
+        foreach (int i in OutTriangles)
+        {
+            x += i + " ";
+        }
+
+        print(x);
+
         meshFilter.sharedMesh.Clear();
         meshFilter.sharedMesh.vertices = OutVertices.ToArray();
         meshFilter.sharedMesh.triangles = OutTriangles.ToArray();
