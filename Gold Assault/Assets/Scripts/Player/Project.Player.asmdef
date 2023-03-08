@@ -1,0 +1,18 @@
+{
+    "name": "Project.Player",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e98fea1913115bc4eba38c44744f38e9",
+        "GUID:3331370e4c1697e4d9a1f76e19219549",
+        "GUID:7ccc9ff2ac6834e4dbb738199536dcea"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
