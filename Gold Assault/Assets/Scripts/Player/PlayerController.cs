@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Interface.IInteractable;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -34,7 +35,10 @@ public class PlayerController : MonoBehaviour
     public Vector2 upperLimit;
     public GameObject targPos;
     private bool isRappelling = false;
-    private bool halt = false;
+    private bool waiting = false;
+
+    [SerializeField] private GameObject rappelInteraction;
+    [SerializeField] private Image rappelImage;
 
     private float currentTime = 0f;
 
@@ -45,6 +49,8 @@ public class PlayerController : MonoBehaviour
         cam = transform.Find("Camera Holder").gameObject;
 
         Cursor.lockState = CursorLockMode.Locked;
+
+        rappelInteraction.SetActive(false);
     }
 
     // Update is called once per frame
@@ -59,15 +65,14 @@ public class PlayerController : MonoBehaviour
 
         if (canRappel && !isRappelling)
         {
-            print("[][] rappel [][]");
+            rappelInteraction.SetActive(true);
+            rappelImage.fillAmount = currentTime;
             if (Input.GetKey(KeyCode.F))
             {
-                print(currentTime);
+                //print(currentTime);
                 currentTime += Time.deltaTime;
                 if (currentTime >= 1f)
                 {
-                    halt = true;
-                    print("rappelling noises");
                     isRappelling = true;
                     currentTime = 0f;
 
@@ -87,11 +92,11 @@ public class PlayerController : MonoBehaviour
                     transform.rotation = Quaternion.Euler(-90, parentT.eulerAngles.y, 0);
                     //cam.transform.localRotation = Quaternion.Euler(0, rot, 0);
 
-                    //transform.SetParent(rappellingObject.transform);
+                    transform.SetParent(rappellingObject.transform);
 
-                    transform.position = targPos.transform.position;
+                    //ChangePositionController(new Vector3(transform.position.x, transform.position.y, rappellingObject.transform.position.z));
+                    ChangeLocalPositionController(new Vector3(transform.localPosition.x, transform.localPosition.y, rappellingObject.transform.localPosition.z - (CC.height / 4)));
 
-                    halt = false;
 
 
                 }
@@ -100,6 +105,10 @@ public class PlayerController : MonoBehaviour
             {
                 currentTime = 0f;
             }
+        }
+        else if (!canRappel && !isRappelling)
+        {
+            rappelInteraction.SetActive(false);
         }
 
         if (!isRappelling)
@@ -152,32 +161,70 @@ public class PlayerController : MonoBehaviour
         }
         else if (isRappelling)
         {
-            Vector3 move = transform.right * x + transform.forward * z;
-            // Transform parentT = rappellingObject.transform.parent.transform;
+            Vector3 move = Vector3.zero;
+            Transform RepelT = rappellingObject.transform;
+            if (transform.localPosition.x <= upperLimit.x && transform.localPosition.y <= upperLimit.y && transform.localPosition.x >= lowerLimit.x && transform.localPosition.y >= lowerLimit.y)
+            {
+                move = transform.right * x + transform.forward * z;
+            }
+            else if (transform.localPosition.x > upperLimit.x)
+            {
+                ChangeLocalPositionController(new Vector3(upperLimit.x, transform.localPosition.y, transform.localPosition.z));
+            }
+            else if (transform.localPosition.y > upperLimit.y)
+            {
+                ChangeLocalPositionController(new Vector3(transform.localPosition.x, upperLimit.y, transform.localPosition.z));
+            }
+            else if (transform.localPosition.x < lowerLimit.x)
+            {
+                ChangeLocalPositionController(new Vector3(lowerLimit.x, transform.localPosition.y, transform.localPosition.z));
+            }
+            else if (transform.localPosition.y < lowerLimit.y)
+            {
+                ChangeLocalPositionController(new Vector3(transform.localPosition.x, lowerLimit.y, transform.localPosition.z));
+            }
+
 
             if (Input.GetKeyDown(KeyCode.C))
             {
-                transform.localRotation = Quaternion.Euler(transform.eulerAngles.x + 180, transform.eulerAngles.y, transform.eulerAngles.z);
+                transform.rotation = Quaternion.Euler(transform.eulerAngles.x + 180, transform.eulerAngles.y, transform.eulerAngles.z + 180);
 
             }
-
 
             CC.Move(move.normalized * speed * Time.smoothDeltaTime);
 
             velocity.y = 0f;
 
+            rappelImage.fillAmount = currentTime;
             if (Input.GetKey(KeyCode.F))
             {
-                print(currentTime);
+                //print(currentTime);
                 currentTime += Time.deltaTime;
                 if (currentTime >= 1f)
                 {
-                    print("rappelling noises");
-                    isRappelling = false;
-                    currentTime = 0f;
-                    transform.rotation = Quaternion.Euler(0, rappellingObject.transform.eulerAngles.y, 0);
-                    cam.transform.localRotation = Quaternion.Euler(0, 0, 0);
-                    //transform.SetParent(null);
+                    if (transform.localPosition.y >= upperLimit.y - 2 || waiting)
+                    {
+                        waiting = true;
+                        DismountAtRoof();
+                        //ChangeLocalPositionController(new Vector3(transform.localPosition.x, upperLimit.y + (CC.height - 1), 2));
+                    }
+                    else if (isRappelling && !waiting)
+                    {
+                        currentTime = 0f;
+                        transform.rotation = Quaternion.Euler(0, rappellingObject.transform.eulerAngles.y, 0);
+                        cam.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+                        
+                        //print(transform.localPosition.y >= upperLimit.y - 2);
+                        //print(transform.localPosition.y + " " + upperLimit.y);
+
+
+                        transform.SetParent(null);
+                        isRappelling = false;
+
+                    }
+
+
                 }
             }
             else
@@ -270,8 +317,118 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void DismountAtRoof()
+    {
+        StartCoroutine(GetOffAtRoofRappel());
+    }
+
+    IEnumerator GetOffAtRoofRappel()
+    {
+        Vector3 targPos = new Vector3(transform.localPosition.x, upperLimit.y + (CC.height / 2), rappellingObject.transform.localPosition.z + 2);
+        //targPos = transform.TransformPoint(targPos);
+        //print(new Vector3(transform.localPosition.x, upperLimit.y + CC.height, 2));
+        CC.enabled = false;
+        yield return null;
+        transform.localPosition = targPos;
+        targPos = transform.position;
+        yield return null;
+        CC.enabled = true;
+
+        Debug.LogAssertion("wait");
+        yield return null;
+
+        currentTime = 0f;
+        transform.rotation = Quaternion.Euler(0, rappellingObject.transform.eulerAngles.y, 0);
+        cam.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+        print(transform.localPosition.y >= upperLimit.y - 2);
+        print(transform.localPosition.y + " " + upperLimit.y);
+
+        yield return null;
+
+        while (transform.position != targPos)
+        {
+            CC.enabled = false;
+            transform.position = targPos;
+            yield return null;
+        }
+
+        CC.enabled = true;
+
+        transform.SetParent(null);
+
+        waiting = false;
+
+        isRappelling = false;
+
+    }
+
     public void SetGrounded(bool _isGrounded)
     {
         isGrounded = _isGrounded;
+    }
+
+    public void ChangePositionController(GameObject targetObj)
+    {
+        StartCoroutine(ChangePos(targetObj));
+        // print("A");
+    }
+
+    public void ChangePositionController(Transform targetObj)
+    {
+        StartCoroutine(ChangePos(targetObj));
+        // print("B");
+    }
+
+    public void ChangePositionController(Vector3 targetObj)
+    {
+        StartCoroutine(ChangePos(targetObj));
+        // print("C");
+    }
+
+    IEnumerator ChangePos(GameObject targetObj)
+    {
+        CC.enabled = false;
+        yield return null;
+        transform.position = targetObj.transform.position;
+        yield return null;
+        CC.enabled = true;
+        // print("a");
+    }
+
+    IEnumerator ChangePos(Transform targetObj)
+    {
+        CC.enabled = false;
+        yield return null;
+        transform.position = targetObj.position;
+        yield return null;
+        CC.enabled = true;
+        // print("b");
+    }
+
+    IEnumerator ChangePos(Vector3 targetObj)
+    {
+        CC.enabled = false;
+        yield return null;
+        transform.position = targetObj;
+        yield return null;
+        CC.enabled = true;
+        // print("c");
+    }
+
+    public void ChangeLocalPositionController(Vector3 targetObj)
+    {
+        StartCoroutine(ChangeLocalPos(targetObj));
+        // print("D");
+    }
+
+    IEnumerator ChangeLocalPos(Vector3 targetObj)
+    {
+        CC.enabled = false;
+        yield return null;
+        transform.localPosition = targetObj;
+        yield return null;
+        CC.enabled = true;
+        // print("d");
     }
 }
