@@ -8,6 +8,9 @@ public class Rappelling : MonoBehaviour
     [SerializeField] Vector2 maxAreas = new Vector2(1, 1);
     [SerializeField] GameObject box;
 
+    public bool atWindow = false;
+    public bool outsideTrigger = false;
+
     void OnDrawGizmos()
     {
         float posX = transform.localPosition.x;
@@ -38,7 +41,7 @@ public class Rappelling : MonoBehaviour
             PC.rappellingObject = gameObject;
             PC.lowerLimit = minAreas;
             PC.upperLimit = maxAreas;
-            PC.targPos = box;
+            //PC.targPos = box;
         }
     }
 

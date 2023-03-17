@@ -29,12 +29,19 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private GameObject groundCheck;
 
+    // this is for rappelling.  
+    // some vaulse are hidden because pablic will show in
+    // inspector but the variables do not need to be in 
+    // the inspector
+    // [HideInInspector]
     public GameObject rappellingObject = null;
+    // [HideInInspector]
     public bool canRappel = false;
     public Vector2 lowerLimit;
     public Vector2 upperLimit;
-    public GameObject targPos;
+    // [HideInInspector]
     private bool isRappelling = false;
+    // [HideInInspector]
     private bool waiting = false;
 
     [SerializeField] private GameObject rappelInteraction;
@@ -89,7 +96,8 @@ public class PlayerController : MonoBehaviour
                     //     rot = parentT.eulerAngles.y - 90;
                     // }
 
-                    transform.rotation = Quaternion.Euler(-90, parentT.eulerAngles.y, 0);
+                    //transform.rotation = Quaternion.Euler(-90, parentT.eulerAngles.y, 0);
+                    transform.rotation = Quaternion.Euler(0, parentT.eulerAngles.y, 0);
                     //cam.transform.localRotation = Quaternion.Euler(0, rot, 0);
 
                     transform.SetParent(rappellingObject.transform);
@@ -97,7 +105,7 @@ public class PlayerController : MonoBehaviour
                     //ChangePositionController(new Vector3(transform.position.x, transform.position.y, rappellingObject.transform.position.z));
                     ChangeLocalPositionController(new Vector3(transform.localPosition.x, transform.localPosition.y, rappellingObject.transform.localPosition.z - (CC.height / 4)));
 
-
+                    //GetComponent<Animator>().SetTrigger("Rappel");
 
                 }
             }
@@ -110,6 +118,7 @@ public class PlayerController : MonoBehaviour
         {
             rappelInteraction.SetActive(false);
         }
+
 
         if (!isRappelling)
         {
@@ -158,11 +167,13 @@ public class PlayerController : MonoBehaviour
             {
                 velocity.y += gravity * Time.deltaTime;
             }
+
         }
         else if (isRappelling)
         {
             Vector3 move = Vector3.zero;
             Transform RepelT = rappellingObject.transform;
+
             if (transform.localPosition.x <= upperLimit.x && transform.localPosition.y <= upperLimit.y && transform.localPosition.x >= lowerLimit.x && transform.localPosition.y >= lowerLimit.y)
             {
                 move = transform.right * x + transform.forward * z;
@@ -195,6 +206,7 @@ public class PlayerController : MonoBehaviour
 
             velocity.y = 0f;
 
+
             rappelImage.fillAmount = currentTime;
             if (Input.GetKey(KeyCode.F))
             {
@@ -210,11 +222,14 @@ public class PlayerController : MonoBehaviour
                     }
                     else if (isRappelling && !waiting)
                     {
+                        //GetComponent<Animator>().SetTrigger("RappelStopGround");
+
                         currentTime = 0f;
                         transform.rotation = Quaternion.Euler(0, rappellingObject.transform.eulerAngles.y, 0);
+                        //transform.rotation = Quaternion.Euler(-90, rappellingObject.transform.eulerAngles.y, 0);
                         cam.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
-                        
+
                         //print(transform.localPosition.y >= upperLimit.y - 2);
                         //print(transform.localPosition.y + " " + upperLimit.y);
 
@@ -231,14 +246,15 @@ public class PlayerController : MonoBehaviour
             {
                 currentTime = 0f;
             }
+
         }
 
 
 
-
-
-
         CC.Move(velocity * Time.deltaTime);
+
+
+
 
         //Camera
         float mouseX = Input.GetAxisRaw("Mouse X") * sensitivity;
