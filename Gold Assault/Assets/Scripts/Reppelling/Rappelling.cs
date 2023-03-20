@@ -8,8 +8,10 @@ public class Rappelling : MonoBehaviour
     [SerializeField] Vector2 maxAreas = new Vector2(1, 1);
     [SerializeField] GameObject box;
 
-    public bool atWindow = false;
+    //public bool atWindow = false;
     public bool outsideTrigger = false;
+
+    //public GameObject targetLandingArea;
 
     void OnDrawGizmos()
     {
@@ -50,6 +52,29 @@ public class Rappelling : MonoBehaviour
         if (other.tag == "Player")
         {
             PlayerController PC = other.GetComponent<PlayerController>();
+            PC.canRappel = false;
+            //PC.rappellingObject = null;
+        }
+    }
+
+    void OnCollisionEnter(Collision other)
+    {
+        if (other.transform.tag == "Player")
+        {
+            PlayerController PC = other.transform.GetComponent<PlayerController>();
+            PC.canRappel = true;
+            PC.rappellingObject = gameObject;
+            PC.lowerLimit = minAreas;
+            PC.upperLimit = maxAreas;
+            //PC.targPos = box;
+        }
+    }
+
+    void OnCollisionExit(Collision other)
+    {
+        if (other.transform.tag == "Player")
+        {
+            PlayerController PC = other.transform.GetComponent<PlayerController>();
             PC.canRappel = false;
             //PC.rappellingObject = null;
         }

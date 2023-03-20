@@ -30,19 +30,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject groundCheck;
 
     // this is for rappelling.  
-    // some vaulse are hidden because pablic will show in
-    // inspector but the variables do not need to be in 
-    // the inspector
-    // [HideInInspector]
     public GameObject rappellingObject = null;
-    // [HideInInspector]
     public bool canRappel = false;
     public Vector2 lowerLimit;
     public Vector2 upperLimit;
-    // [HideInInspector]
+    public GameObject targetLandingArea;
+    public bool atWindow = false;
     private bool isRappelling = false;
-    // [HideInInspector]
     private bool waiting = false;
+
 
     [SerializeField] private GameObject rappelInteraction;
     [SerializeField] private Image rappelImage;
@@ -96,16 +92,25 @@ public class PlayerController : MonoBehaviour
                     //     rot = parentT.eulerAngles.y - 90;
                     // }
 
-                    //transform.rotation = Quaternion.Euler(-90, parentT.eulerAngles.y, 0);
-                    transform.rotation = Quaternion.Euler(0, parentT.eulerAngles.y, 0);
+                    transform.rotation = Quaternion.Euler(-90, parentT.eulerAngles.y, 0);
                     //cam.transform.localRotation = Quaternion.Euler(0, rot, 0);
 
                     transform.SetParent(rappellingObject.transform);
 
+                    if (transform.localPosition.y > upperLimit.y)
+                    {
+                        ChangeLocalPositionController(new Vector3(transform.localPosition.x, upperLimit.y, rappellingObject.transform.localPosition.z - (CC.height / 4)));
+                        transform.rotation = Quaternion.Euler(transform.eulerAngles.x + 180, transform.eulerAngles.y, transform.eulerAngles.z + 180);
+                    }
+                    else
+                    {
+                        ChangeLocalPositionController(new Vector3(transform.localPosition.x, transform.localPosition.y, rappellingObject.transform.localPosition.z - (CC.height / 4)));
+                    }
+
                     //ChangePositionController(new Vector3(transform.position.x, transform.position.y, rappellingObject.transform.position.z));
-                    ChangeLocalPositionController(new Vector3(transform.localPosition.x, transform.localPosition.y, rappellingObject.transform.localPosition.z - (CC.height / 4)));
 
                     //GetComponent<Animator>().SetTrigger("Rappel");
+                    canRappel = false;
 
                 }
             }
@@ -174,26 +179,40 @@ public class PlayerController : MonoBehaviour
             Vector3 move = Vector3.zero;
             Transform RepelT = rappellingObject.transform;
 
-            if (transform.localPosition.x <= upperLimit.x && transform.localPosition.y <= upperLimit.y && transform.localPosition.x >= lowerLimit.x && transform.localPosition.y >= lowerLimit.y)
+            Vector3 move2 = Vector3.zero;
+
+            // used to get the future posistion.
+            move = transform.right * x + transform.forward * z;
+            move2 = move.normalized * speed * Time.smoothDeltaTime;
+
+            Vector3 predicted = transform.position;
+            predicted = RepelT.InverseTransformPoint(predicted + move2);
+
+            if (predicted.x <= upperLimit.x && predicted.y <= upperLimit.y && predicted.x >= lowerLimit.x && predicted.y >= lowerLimit.y)
             {
-                move = transform.right * x + transform.forward * z;
+                CC.Move(move2);
+                // if (transform.localPosition == predicted)
+                //     print("Sucsess");
+                // else
+                //     Debug.LogError("Failure");
+
             }
-            else if (transform.localPosition.x > upperLimit.x)
-            {
-                ChangeLocalPositionController(new Vector3(upperLimit.x, transform.localPosition.y, transform.localPosition.z));
-            }
-            else if (transform.localPosition.y > upperLimit.y)
-            {
-                ChangeLocalPositionController(new Vector3(transform.localPosition.x, upperLimit.y, transform.localPosition.z));
-            }
-            else if (transform.localPosition.x < lowerLimit.x)
-            {
-                ChangeLocalPositionController(new Vector3(lowerLimit.x, transform.localPosition.y, transform.localPosition.z));
-            }
-            else if (transform.localPosition.y < lowerLimit.y)
-            {
-                ChangeLocalPositionController(new Vector3(transform.localPosition.x, lowerLimit.y, transform.localPosition.z));
-            }
+            // else if (transform.localPosition.x > upperLimit.x)
+            // {
+            //     ChangeLocalPositionController(new Vector3(upperLimit.x, transform.localPosition.y, transform.localPosition.z));
+            // }
+            // else if (transform.localPosition.y > upperLimit.y)
+            // {
+            //     ChangeLocalPositionController(new Vector3(transform.localPosition.x, upperLimit.y, transform.localPosition.z));
+            // }
+            // else if (transform.localPosition.x < lowerLimit.x)
+            // {
+            //     ChangeLocalPositionController(new Vector3(lowerLimit.x, transform.localPosition.y, transform.localPosition.z));
+            // }
+            // else if (transform.localPosition.y < lowerLimit.y)
+            // {
+            //     ChangeLocalPositionController(new Vector3(transform.localPosition.x, lowerLimit.y, transform.localPosition.z));
+            // }
 
 
             if (Input.GetKeyDown(KeyCode.C))
@@ -202,7 +221,28 @@ public class PlayerController : MonoBehaviour
 
             }
 
-            CC.Move(move.normalized * speed * Time.smoothDeltaTime);
+            if (atWindow)
+                print("SAPCE!!!");
+
+            if (atWindow && Input.GetKeyDown(KeyCode.Space))
+            {
+                transform.rotation = Quaternion.Euler(0, rappellingObject.transform.eulerAngles.y, 0);
+                cam.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+                ChangeLocalPositionController(targetLandingArea.transform.position);
+
+
+                transform.SetParent(null);
+                isRappelling = false;
+            }
+
+
+            //CC.Move(move2);
+
+            // print((((transform.position - old) / speed) / Time.smoothDeltaTime) - move.normalized);
+            // print(old + move2 + " | " + transform.position);
+
+            //print(transform.localPosition + " " + old);
 
             velocity.y = 0f;
 
@@ -218,6 +258,7 @@ public class PlayerController : MonoBehaviour
                     {
                         waiting = true;
                         DismountAtRoof();
+
                         //ChangeLocalPositionController(new Vector3(transform.localPosition.x, upperLimit.y + (CC.height - 1), 2));
                     }
                     else if (isRappelling && !waiting)
@@ -226,7 +267,6 @@ public class PlayerController : MonoBehaviour
 
                         currentTime = 0f;
                         transform.rotation = Quaternion.Euler(0, rappellingObject.transform.eulerAngles.y, 0);
-                        //transform.rotation = Quaternion.Euler(-90, rappellingObject.transform.eulerAngles.y, 0);
                         cam.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
 
@@ -350,7 +390,7 @@ public class PlayerController : MonoBehaviour
         yield return null;
         CC.enabled = true;
 
-        Debug.LogAssertion("wait");
+        //Debug.LogAssertion("wait");
         yield return null;
 
         currentTime = 0f;
@@ -362,10 +402,10 @@ public class PlayerController : MonoBehaviour
 
         yield return null;
 
-        while (transform.position != targPos)
+        while (transform.localPosition != targPos)
         {
             CC.enabled = false;
-            transform.position = targPos;
+            transform.localPosition = targPos;
             yield return null;
         }
 
