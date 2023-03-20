@@ -119,6 +119,11 @@ public class AutomaticGun : Gun
         }
     }
 
+    public override void IndexEquip(int index)
+    {
+        throw new System.NotImplementedException();
+    }
+
 
 
 

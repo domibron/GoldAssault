@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: gun
   m_EditorClassIdentifier: 
   ItemName: gun
+  ItemID: 999999001
   damage: 10
   fireRate: 20
   reloadSpeed: 0.5

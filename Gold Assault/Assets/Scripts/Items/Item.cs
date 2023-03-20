@@ -10,4 +10,6 @@ public abstract class Item : MonoBehaviour
     public abstract void UseMouse0();
 
     public abstract void UseRKey();
+
+    public abstract void IndexEquip(int index);
 }
