@@ -45,6 +45,10 @@ public class PlayerController : MonoBehaviour
 
     private float currentTime = 0f;
 
+    // * for the inventory so this knows what is equiped.
+    public GameObject[] L_inventory = new GameObject[5];
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -91,6 +95,8 @@ public class PlayerController : MonoBehaviour
                     // {
                     //     rot = parentT.eulerAngles.y - 90;
                     // }
+
+                    // TODO Please rotate the camera.
 
                     transform.rotation = Quaternion.Euler(-90, parentT.eulerAngles.y, 0);
                     //cam.transform.localRotation = Quaternion.Euler(0, rot, 0);
