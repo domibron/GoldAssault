@@ -108,7 +108,7 @@ public class InventoryManager : MonoBehaviour
             }
             catch (NullReferenceException e)
             {
-                Debug.LogWarning($"NRE! - {e.Message} at {e.Source} \n" +
+                Debug.LogWarning($"NRE! - {e.Message} at {e.TargetSite} \n" +
                 $"Error trying to Instantiate. Index: {i + 1} weapon ID: {itemID[i]}");
                 CreateItem(i + 1); // this still creates the 0 object.
             }
