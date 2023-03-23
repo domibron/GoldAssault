@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Interface.IInteractable;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -21,10 +22,31 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float gravity = -9.81f;
 
     // camera
+    private float yRotation;
     private float xRotation;
+
     [SerializeField] private float sensitivity = 1f;
 
     [SerializeField] private GameObject groundCheck;
+
+    // this is for rappelling.  
+    public GameObject rappellingObject = null;
+    public bool canRappel = false;
+    public Vector2 lowerLimit;
+    public Vector2 upperLimit;
+    public GameObject targetLandingArea;
+    public bool atWindow = false;
+    private bool isRappelling = false;
+    private bool waiting = false;
+
+
+    [SerializeField] private GameObject rappelInteraction;
+    [SerializeField] private Image rappelImage;
+
+    private float currentTime = 0f;
+
+    // * for the inventory so this knows what is equiped.
+    public GameObject[] L_inventory = new GameObject[5];
 
 
     // Start is called before the first frame update
@@ -34,6 +56,8 @@ public class PlayerController : MonoBehaviour
         cam = transform.Find("Camera Holder").gameObject;
 
         Cursor.lockState = CursorLockMode.Locked;
+
+        rappelInteraction.SetActive(false);
     }
 
     // Update is called once per frame
@@ -42,108 +66,302 @@ public class PlayerController : MonoBehaviour
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
 
-        Vector3 move = transform.right * x + transform.forward * z;
+
 
         //move /= speedNurf;
 
-        // this is to check if the player is holding shift bit not left control.
-        if (Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.LeftControl))
-            CC.Move(move.normalized * 2 * speed * Time.smoothDeltaTime);
-
-        // this is to check if the player is not holding both keys.
-        else if (!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.LeftControl))
-            CC.Move(move.normalized * speed * Time.smoothDeltaTime);
-
-        // this is to check if the player is just holding left control.
-        else if (!Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
-            CC.Move(move.normalized / 2 * speed * Time.smoothDeltaTime);
-
-        //this is to check if the player is holding both keys.
-        else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
-            CC.Move(move.normalized / 1.5f * speed * Time.smoothDeltaTime);
-
-        // this is to catch and unpinplimented checks.
-        else
-            Debug.LogError("character vars not set");
-
-
-
-        if (Input.GetKey(KeyCode.LeftControl)) // REPLACE WITH TIME OTHERWISE ISSUES WILL OCCUR
-            transform.localScale = new Vector3(transform.localScale.x,
-            Mathf.Lerp(transform.localScale.y, 0.5f, transform.localScale.y * 0.2f), transform.localScale.z);
-        else
-            transform.localScale = new Vector3(transform.localScale.x,
-            Mathf.Lerp(transform.localScale.y, 1f, transform.localScale.y * 0.2f), transform.localScale.z);
-
-        // player jump
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (canRappel && !isRappelling)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            rappelInteraction.SetActive(true);
+            rappelImage.fillAmount = currentTime;
+            if (Input.GetKey(KeyCode.F))
+            {
+                //print(currentTime);
+                currentTime += Time.deltaTime;
+                if (currentTime >= 1f)
+                {
+                    isRappelling = true;
+                    currentTime = 0f;
+
+                    Transform parentT = rappellingObject.transform.parent.transform;
+                    // float rot = 0;
+
+                    // if (parentT.eulerAngles.y < 90)
+                    // {
+                    //     rot = 90 - parentT.eulerAngles.y;
+                    //     rot = 360 - rot;
+                    // }
+                    // else
+                    // {
+                    //     rot = parentT.eulerAngles.y - 90;
+                    // }
+
+                    // TODO Please rotate the camera.
+
+                    transform.rotation = Quaternion.Euler(-90, parentT.eulerAngles.y, 0);
+                    //cam.transform.localRotation = Quaternion.Euler(0, rot, 0);
+
+                    transform.SetParent(rappellingObject.transform);
+
+                    if (transform.localPosition.y > upperLimit.y)
+                    {
+                        ChangeLocalPositionController(new Vector3(transform.localPosition.x, upperLimit.y, rappellingObject.transform.localPosition.z - (CC.height / 4)));
+                        transform.rotation = Quaternion.Euler(transform.eulerAngles.x + 180, transform.eulerAngles.y, transform.eulerAngles.z + 180);
+                    }
+                    else
+                    {
+                        ChangeLocalPositionController(new Vector3(transform.localPosition.x, transform.localPosition.y, rappellingObject.transform.localPosition.z - (CC.height / 4)));
+                    }
+
+                    //ChangePositionController(new Vector3(transform.position.x, transform.position.y, rappellingObject.transform.position.z));
+
+                    //GetComponent<Animator>().SetTrigger("Rappel");
+                    canRappel = false;
+
+                }
+            }
+            else
+            {
+                currentTime = 0f;
+            }
+        }
+        else if (!canRappel && !isRappelling)
+        {
+            rappelInteraction.SetActive(false);
         }
 
-        // gravity
-        if (isGrounded && velocity.y < 0)
+
+        if (!isRappelling)
         {
-            velocity.y = -2f;
+            Vector3 move = transform.right * x + transform.forward * z;
+
+            // this is to check if the player is holding shift bit not left control.
+            if (Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.LeftControl))
+                CC.Move(move.normalized * 2 * speed * Time.smoothDeltaTime);
+
+            // this is to check if the player is not holding both keys.
+            else if (!Input.GetKey(KeyCode.LeftShift) && !Input.GetKey(KeyCode.LeftControl))
+                CC.Move(move.normalized * speed * Time.smoothDeltaTime);
+
+            // this is to check if the player is just holding left control.
+            else if (!Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
+                CC.Move(move.normalized / 2 * speed * Time.smoothDeltaTime);
+
+            //this is to check if the player is holding both keys.
+            else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftControl))
+                CC.Move(move.normalized / 1.5f * speed * Time.smoothDeltaTime);
+
+            // this is to catch and unpinplimented checks.
+            else
+                Debug.LogError("character vars not set");
+
+
+            if (Input.GetKey(KeyCode.LeftControl)) // REPLACE WITH TIME OTHERWISE ISSUES WILL OCCUR - the lerps
+                transform.localScale = new Vector3(transform.localScale.x,
+                Mathf.Lerp(transform.localScale.y, 0.5f, transform.localScale.y * 0.2f), transform.localScale.z);
+            else
+                transform.localScale = new Vector3(transform.localScale.x,
+                Mathf.Lerp(transform.localScale.y, 1f, transform.localScale.y * 0.2f), transform.localScale.z);
+
+            // player jump
+            if (Input.GetButtonDown("Jump") && isGrounded)
+            {
+                velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            }
+
+            // gravity
+            if (isGrounded && velocity.y < 0)
+            {
+                velocity.y = -2f;
+            }
+            else
+            {
+                velocity.y += gravity * Time.deltaTime;
+            }
+
         }
-        else
+        else if (isRappelling)
         {
-            velocity.y += gravity * Time.deltaTime;
+            Vector3 move = Vector3.zero;
+            Transform RepelT = rappellingObject.transform;
+
+            Vector3 move2 = Vector3.zero;
+
+            // used to get the future posistion.
+            move = transform.right * x + transform.forward * z;
+            move2 = move.normalized * speed * Time.smoothDeltaTime;
+
+            Vector3 predicted = transform.position;
+            predicted = RepelT.InverseTransformPoint(predicted + move2);
+
+            if (predicted.x <= upperLimit.x && predicted.y <= upperLimit.y && predicted.x >= lowerLimit.x && predicted.y >= lowerLimit.y)
+            {
+                CC.Move(move2);
+                // if (transform.localPosition == predicted)
+                //     print("Sucsess");
+                // else
+                //     Debug.LogError("Failure");
+
+            }
+            // else if (transform.localPosition.x > upperLimit.x)
+            // {
+            //     ChangeLocalPositionController(new Vector3(upperLimit.x, transform.localPosition.y, transform.localPosition.z));
+            // }
+            // else if (transform.localPosition.y > upperLimit.y)
+            // {
+            //     ChangeLocalPositionController(new Vector3(transform.localPosition.x, upperLimit.y, transform.localPosition.z));
+            // }
+            // else if (transform.localPosition.x < lowerLimit.x)
+            // {
+            //     ChangeLocalPositionController(new Vector3(lowerLimit.x, transform.localPosition.y, transform.localPosition.z));
+            // }
+            // else if (transform.localPosition.y < lowerLimit.y)
+            // {
+            //     ChangeLocalPositionController(new Vector3(transform.localPosition.x, lowerLimit.y, transform.localPosition.z));
+            // }
+
+
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                transform.rotation = Quaternion.Euler(transform.eulerAngles.x + 180, transform.eulerAngles.y, transform.eulerAngles.z + 180);
+
+            }
+
+            if (atWindow)
+                print("SAPCE!!!");
+
+            if (atWindow && Input.GetKeyDown(KeyCode.Space))
+            {
+                transform.rotation = Quaternion.Euler(0, rappellingObject.transform.eulerAngles.y, 0);
+                cam.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+                ChangeLocalPositionController(targetLandingArea.transform.position);
+
+
+                transform.SetParent(null);
+                isRappelling = false;
+            }
+
+
+            //CC.Move(move2);
+
+            // print((((transform.position - old) / speed) / Time.smoothDeltaTime) - move.normalized);
+            // print(old + move2 + " | " + transform.position);
+
+            //print(transform.localPosition + " " + old);
+
+            velocity.y = 0f;
+
+
+            rappelImage.fillAmount = currentTime;
+            if (Input.GetKey(KeyCode.F))
+            {
+                //print(currentTime);
+                currentTime += Time.deltaTime;
+                if (currentTime >= 1f)
+                {
+                    if (transform.localPosition.y >= upperLimit.y - 2 || waiting)
+                    {
+                        waiting = true;
+                        DismountAtRoof();
+
+                        //ChangeLocalPositionController(new Vector3(transform.localPosition.x, upperLimit.y + (CC.height - 1), 2));
+                    }
+                    else if (isRappelling && !waiting)
+                    {
+                        //GetComponent<Animator>().SetTrigger("RappelStopGround");
+
+                        currentTime = 0f;
+                        transform.rotation = Quaternion.Euler(0, rappellingObject.transform.eulerAngles.y, 0);
+                        cam.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+
+                        //print(transform.localPosition.y >= upperLimit.y - 2);
+                        //print(transform.localPosition.y + " " + upperLimit.y);
+
+
+                        transform.SetParent(null);
+                        isRappelling = false;
+
+                    }
+
+
+                }
+            }
+            else
+            {
+                currentTime = 0f;
+            }
+
         }
+
 
 
         CC.Move(velocity * Time.deltaTime);
+
+
+
 
         //Camera
         float mouseX = Input.GetAxisRaw("Mouse X") * sensitivity;
         float mouseY = Input.GetAxisRaw("Mouse Y") * sensitivity;
 
+        if (!isRappelling) // put in the uper if statement
+        {
+            yRotation -= mouseY;
+            yRotation = Mathf.Clamp(yRotation, -90f, 90f);
 
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+            transform.Rotate(Vector3.up * mouseX);
+            cam.transform.localRotation = Quaternion.Euler(yRotation, 0, 0);
+        }
+        else if (isRappelling)
+        {
 
 
-        transform.Rotate(Vector3.up * mouseX);
-        cam.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+            yRotation -= mouseY;
+            yRotation = Mathf.Clamp(yRotation, -90f, 90f);
 
-        // isGrounded = Physics.CheckSphere(groundCheck.transform.position, CC.radius - 0.05f, 3);
+
+            xRotation += mouseX;
+            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+            cam.transform.localRotation = Quaternion.Euler(yRotation, xRotation, 0);
+
+
+        }
 
         // ground check
         isGrounded = CC.isGrounded;
 
 
-        // RaycastHit hit;
-        // float extention;
 
 
-        // Physics.Raycast(transform.position, Vector3.down, out hit, CC.height / 2 + 0.5f);
-        // if (hit.normal != Vector3.up)
-        //     extention = maxDistance;
-        // else
-        //     extention = minDistance;
+        // Transform parentT = rappellingObject.transform.parent.transform;
+        // float minRot = 0;
+        // float maxRot = 0;
 
-        // isGrounded = Physics.Raycast(transform.position, Vector3.down, CC.height / 2 + extention);
-
-
-        // Vector3 groundCheckPos = CC.center - new Vector3(0, CC.height, 0);
-
-        // RaycastHit hit;
-
-        // isGrounded = Physics.CheckSphere(groundCheck.transform.position, CC.radius - 0.05f);
-        // if (Physics.SphereCast(groundCheck.transform.position, CC.radius - 0.05f, -transform.up, out hit, CC.radius - 0.05f))
+        // if (parentT.eulerAngles.y > 90) // <
         // {
-        //     print("yes");
-        //     if (hit.transform.gameObject.layer == 3)
-        //     {
-        //         isGrounded = true;
-        //         print("ground");
-        //     }
-        //     else
-        //     {
-        //         isGrounded = false;
-        //         print("failed ground");
-        //     }
+        //     float temp;
+        //     temp = 90 - parentT.eulerAngles.y;
+        //     minRot = 360 - temp;
+        //     maxRot = parentT.eulerAngles.y - 90;
         // }
+        // else if (parentT.eulerAngles.y < 90) // >
+        // {
+        //     float temp;
+        //     temp = 360 - parentT.eulerAngles.y;
+        //     maxRot = 90 - temp;
+        //     minRot = parentT.eulerAngles.y + 90;
+        // }
+        // else
+        // {
+        //     maxRot = parentT.eulerAngles.y + 90;
+        //     minRot = parentT.eulerAngles.y - 90;
+        // }
+
+
 
 
         // Interactions
@@ -161,8 +379,118 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void DismountAtRoof()
+    {
+        StartCoroutine(GetOffAtRoofRappel());
+    }
+
+    IEnumerator GetOffAtRoofRappel()
+    {
+        Vector3 targPos = new Vector3(transform.localPosition.x, upperLimit.y + (CC.height / 2), rappellingObject.transform.localPosition.z + 2);
+        //targPos = transform.TransformPoint(targPos);
+        //print(new Vector3(transform.localPosition.x, upperLimit.y + CC.height, 2));
+        CC.enabled = false;
+        yield return null;
+        transform.localPosition = targPos;
+        targPos = transform.position;
+        yield return null;
+        CC.enabled = true;
+
+        //Debug.LogAssertion("wait");
+        yield return null;
+
+        currentTime = 0f;
+        transform.rotation = Quaternion.Euler(0, rappellingObject.transform.eulerAngles.y, 0);
+        cam.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+        print(transform.localPosition.y >= upperLimit.y - 2);
+        print(transform.localPosition.y + " " + upperLimit.y);
+
+        yield return null;
+
+        while (transform.localPosition != targPos)
+        {
+            CC.enabled = false;
+            transform.localPosition = targPos;
+            yield return null;
+        }
+
+        CC.enabled = true;
+
+        transform.SetParent(null);
+
+        waiting = false;
+
+        isRappelling = false;
+
+    }
+
     public void SetGrounded(bool _isGrounded)
     {
         isGrounded = _isGrounded;
+    }
+
+    public void ChangePositionController(GameObject targetObj)
+    {
+        StartCoroutine(ChangePos(targetObj));
+        // print("A");
+    }
+
+    public void ChangePositionController(Transform targetObj)
+    {
+        StartCoroutine(ChangePos(targetObj));
+        // print("B");
+    }
+
+    public void ChangePositionController(Vector3 targetObj)
+    {
+        StartCoroutine(ChangePos(targetObj));
+        // print("C");
+    }
+
+    IEnumerator ChangePos(GameObject targetObj)
+    {
+        CC.enabled = false;
+        yield return null;
+        transform.position = targetObj.transform.position;
+        yield return null;
+        CC.enabled = true;
+        // print("a");
+    }
+
+    IEnumerator ChangePos(Transform targetObj)
+    {
+        CC.enabled = false;
+        yield return null;
+        transform.position = targetObj.position;
+        yield return null;
+        CC.enabled = true;
+        // print("b");
+    }
+
+    IEnumerator ChangePos(Vector3 targetObj)
+    {
+        CC.enabled = false;
+        yield return null;
+        transform.position = targetObj;
+        yield return null;
+        CC.enabled = true;
+        // print("c");
+    }
+
+    public void ChangeLocalPositionController(Vector3 targetObj)
+    {
+        StartCoroutine(ChangeLocalPos(targetObj));
+        // print("D");
+    }
+
+    IEnumerator ChangeLocalPos(Vector3 targetObj)
+    {
+        CC.enabled = false;
+        yield return null;
+        transform.localPosition = targetObj;
+        yield return null;
+        CC.enabled = true;
+        // print("d");
     }
 }
