@@ -1,9 +1,7 @@
 {
-    "name": "Project.Managers",
+    "name": "Project.QuickOutline",
     "rootNamespace": "",
-    "references": [
-        "Unity.TextMeshPro"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

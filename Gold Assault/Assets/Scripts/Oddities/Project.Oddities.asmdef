@@ -2,7 +2,6 @@
     "name": "Project.Oddities",
     "rootNamespace": "",
     "references": [
-        "GUID:e98fea1913115bc4eba38c44744f38e9",
         "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [],
