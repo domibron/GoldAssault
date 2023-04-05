@@ -6,6 +6,7 @@ TagManager:
   tags:
   - WeaponCamera
   - Selectable
+  - MGO
   layers:
   - Default
   - TransparentFX
