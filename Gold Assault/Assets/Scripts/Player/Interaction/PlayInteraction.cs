@@ -11,6 +11,8 @@ public class PlayInteraction : MonoBehaviour
     private IRayProvider _rayProvider;
     private ISelectionResponse _slectionResponse;
 
+    private ItemInteract _interaction;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -27,6 +29,18 @@ public class PlayInteraction : MonoBehaviour
         _selector.Check(_rayProvider.CreateRay());
         _currentSelection = _selector.GetSelection();
 
+        // local - solid this pelase
+        if (_currentSelection != null)
+        {
+            _interaction = _currentSelection.GetComponent<ItemInteract>();
+
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                _interaction.OnInteraction();
+            }
+        }
+
         if (_currentSelection != null) _slectionResponse.OnSelect(_currentSelection);
     }
 }
+

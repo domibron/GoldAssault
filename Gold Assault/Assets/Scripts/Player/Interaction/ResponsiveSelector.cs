@@ -4,12 +4,26 @@ using UnityEngine;
 
 public class ResponsiveSelector : MonoBehaviour, ISelector
 {
-    [SerializeField] private List<Selectables> selectables;
+    [SerializeField] private List<GameObject> selectables;
     [SerializeField] private float threshold = 0.9f;
     [SerializeField] private float maxDistance = 5f;
 
     private Transform _selection;
 
+    public void Awake()
+    {
+        GameObject[] temp__ = GameObject.FindGameObjectsWithTag("Selectable");
+
+        if (temp__.Length <= 0) return;
+
+        for (int i = 0; i < temp__.Length; i++)
+        {
+            if (temp__[i].GetComponent<ItemInteract>() == null) continue;
+
+            selectables.Add(temp__[i]);
+        }
+
+    }
 
     void ISelector.Check(Ray ray)
     {
@@ -26,7 +40,7 @@ public class ResponsiveSelector : MonoBehaviour, ISelector
             var lookPercentage = Vector3.Dot(vector1.normalized, vector2.normalized);
             var distanceCalc = Vector3.Distance(selectables[i].transform.position, transform.position);
 
-            selectables[i].lookPercentage = lookPercentage;
+            // selectables[i].lookPercentage = lookPercentage;
 
             if (lookPercentage > threshold && lookPercentage > closest && distanceCalc < distance && distanceCalc < maxDistance)
             {
