@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Interface.IInteractable;
 using UnityEngine.UI;
+using System.Linq;
 
 public class PlayerController : MonoBehaviour
 {
+    private List<INoiseAlert> noiseAlertSub;
+
+
     private CharacterController CC;
 
     private GameObject cam;
@@ -58,6 +62,9 @@ public class PlayerController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         rappelInteraction.SetActive(false);
+
+        noiseAlertSub = new List<INoiseAlert>(FindObjectsOfType<Object>().OfType<INoiseAlert>());
+
     }
 
     // Update is called once per frame
@@ -66,7 +73,10 @@ public class PlayerController : MonoBehaviour
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
 
-
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            MadeSomeNoise();
+        }
 
         //move /= speedNurf;
 
@@ -430,6 +440,24 @@ public class PlayerController : MonoBehaviour
         isGrounded = _isGrounded;
     }
 
+    private void MadeSomeNoise()
+    {
+        foreach (INoiseAlert ina in noiseAlertSub)
+        {
+            ina.NoiseMade(transform.position);
+        }
+    }
+
+
+
+
+
+
+
+
+    // !========================================================================   no   =========================================================================================
+
+
     public void ChangePositionController(GameObject targetObj)
     {
         StartCoroutine(ChangePos(targetObj));
@@ -493,4 +521,7 @@ public class PlayerController : MonoBehaviour
         CC.enabled = true;
         // print("d");
     }
+
+
+
 }

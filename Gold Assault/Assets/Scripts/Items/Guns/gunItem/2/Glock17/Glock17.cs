@@ -4,8 +4,13 @@ using UnityEngine;
 
 public class Glock17 : Gun // index ID is 2 because it is a pistol
 {
+    public float timeTillNextShot = 1f;
+
     private Animator animator;
     bool equipped = false;
+
+    private float localTime = 0f;
+    private float delay = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -17,6 +22,9 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
     // Update is called once per frame
     void Update()
     {
+        if (localTime > 0) localTime -= Time.deltaTime;
+        else localTime = 0;
+
         if (gameObject.activeSelf && !equipped)
         {
             equipped = true;
@@ -36,10 +44,24 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
             animator.SetBool("ADS", false);
         }
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonDown(0))
         {
-            animator.SetTrigger("Fire");
+            shoot();
         }
+    }
+
+    private void shoot()
+    {
+        if (localTime <= 0.01f)
+        {
+            localTime += timeTillNextShot;
+            animator.SetTrigger("Fire");
+
+            // shoot
+            Debug.DrawLine(transform.position, transform.forward * 10f, Color.blue, 0.5f);
+        }
+
+
     }
 
     public override void UseMouse0()

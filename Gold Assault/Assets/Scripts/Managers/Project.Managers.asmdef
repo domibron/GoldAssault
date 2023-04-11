@@ -2,7 +2,8 @@
     "name": "Project.Managers",
     "rootNamespace": "",
     "references": [
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Project.Items"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
