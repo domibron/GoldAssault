@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +16,7 @@ public class LobbyManager : MonoBehaviour
 
     public GameObject[] ItemSlots;
 
-    private int[] TempInv = { 1, 1, 0, 0, 0 };
+    public ItemInformationForLoadout[] itemInformation = new ItemInformationForLoadout[5];
 
     private int selectedItemSlotType = 0;
     private int selectedItemID = 0;
@@ -34,16 +35,32 @@ public class LobbyManager : MonoBehaviour
 
         closeWeaponSections();
 
-        if (MasterManger.Instance == null)
+        if (MasterManger.current == null)
         {
             // retry or create item.
             // then refrence to the item
+            // dont need to reference it i belive.
+
+            MGObackupboot.CheckAndCreateMasterManager();
         }
 
-        // * load inventory into the temp inv so i can use it later.
+        if (SaveManager.current == null)
+        {
+            SMBackupBoot.CheckAndCreateSaveManager();
+        }
+
+        // * load inventory into the temp inv so i can use it later. // hmmm
+
+        SaveManager.current.onSave += OnSaveGame;
 
         LoadInventory();
 
+    }
+
+    private void OnSaveGame()
+    {
+        SaveManager.current.getCurrentInventory();
+        LoadInventory();
     }
 
     // Update is called once per frame
@@ -87,6 +104,7 @@ public class LobbyManager : MonoBehaviour
             if (i == _i)
             {
                 WeaponSections[i].SetActive(true);
+                ItemSelected(itemInformation[i]);
             }
             else
             {
@@ -125,19 +143,64 @@ public class LobbyManager : MonoBehaviour
         // save data
         // no save data?
         // then create basic.
-        ItemInformationForLoadout IIFL = null;
 
+        if (SaveManager.current == null)
+        {
+            Debug.LogError("There was no Save Manager");
+            return;
+        }
+
+        int[] _tempInv = SaveManager.current.getCurrentInventory();
+
+        for (int i = 0; i < _tempInv.Length; i++)
+        {
+            //ItemInformationForLoadout IIFL;
+
+            try
+            {
+                //IIFL = (ItemInformationForLoadout)Resources.Load("ItemInformation/" + plusOne + "/" + _tempInv[i]);
+                SetupItem(i, _tempInv[i]);
+            }
+            catch (NullReferenceException)
+            {
+                Debug.LogWarningFormat("An error occurred at index {0} at slot {1}", _tempInv[i], i);
+                SetupItem(i);
+                //IIFL = (ItemInformationForLoadout)Resources.Load("ItemInformation/0");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("cannot compleate loading of inventory" + e.GetType());
+            }
+
+            //print(IIFL.name);
+
+            //ItemSlots[i].GetComponentInChildren<Image>().sprite = IIFL.image;
+
+            // player equip.
+
+
+        }
+    }
+
+    private void SetupItem(int slot, int id)
+    {
         try
         {
-            IIFL = (ItemInformationForLoadout)Resources.Load("ItemInformation/" + "2" + "/" + "1");
+            ItemInformationForLoadout IIFL = (ItemInformationForLoadout)Resources.Load("ItemInformation/" + (slot + 1) + "/" + id);
+            ItemSlots[slot].GetComponentInChildren<Image>().sprite = IIFL.image;
+            itemInformation[slot] = IIFL;
+
         }
         catch
         {
-            Debug.LogWarning("An error occurred!");
+            throw new NullReferenceException();
         }
+    }
 
-
-        ItemSlots[1].GetComponentInChildren<Image>().sprite = IIFL.image;
-
+    private void SetupItem(int slot)
+    {
+        ItemInformationForLoadout IIFL = (ItemInformationForLoadout)Resources.Load("ItemInformation/0");
+        ItemSlots[slot].GetComponentInChildren<Image>().sprite = IIFL.image;
+        itemInformation[slot] = IIFL;
     }
 }

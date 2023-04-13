@@ -14,9 +14,9 @@ public class MenuManager : MonoBehaviour
     {
         LoadMenu(0); // loads the loading menu
 
-        if (MasterManger.Instance != null) // maybe try a try catch. this is to prevent a game crash and stop the game from proceeding.
+        if (MasterManger.current != null) // maybe try a try catch. this is to prevent a game crash and stop the game from proceeding.
         {
-            MM = MasterManger.Instance;
+            MM = MasterManger.current;
         }
         else
         {

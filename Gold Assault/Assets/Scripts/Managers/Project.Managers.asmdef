@@ -3,7 +3,10 @@
     "rootNamespace": "",
     "references": [
         "Unity.TextMeshPro",
-        "Project.Items"
+        "Project.Items",
+        "Project.SaveSystem",
+        "Project.MasterManager",
+        "Project.Player"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

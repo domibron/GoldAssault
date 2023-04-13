@@ -19,11 +19,24 @@ public class InventoryManager : MonoBehaviour
     {
         // * singletons
         // _Master = get the thingy that allows to only have one 
+
+        try
+        {
+
+
+        }
+        catch
+        {
+
+
+        }
+
+
         try // this is to stop the game from crashing / complaining if the Master was not loaded. it will still load base weapons.
         {
-            if (!overrideInventory) // get rid of the if statement on release, because people attually want to use their weapons.
+            if (!overrideInventory) // get rid of the if statement on release, because people attually want to use their weapons. might no, as its usful.
             {
-                throw new System.NullReferenceException();
+                SetUpInventory(SaveManager.current.getCurrentInventory());
 
             }
             else if (overrideInventory)
