@@ -6,7 +6,8 @@
         "Project.Items",
         "Project.SaveSystem",
         "Project.MasterManager",
-        "Project.Player"
+        "Project.Player",
+        "Project.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

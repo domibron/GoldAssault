@@ -1,41 +1,48 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+
+#if UNITY_EDITOR
+// ! ===============================
+using UnityEditor;
+
+[CustomEditor(typeof(OverideSaveData)), CanEditMultipleObjects]
+public class OverideSaveDataButtons : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        DrawDefaultInspector();
+
+        OverideSaveData myScript = (OverideSaveData)target;
+        if (GUILayout.Button("Force Save"))
+            myScript.saveArrayToInventory();
+    }
+}
+// ! ===============================
+#endif
 
 public class OverideSaveData : MonoBehaviour
 {
-    [ContextMenuItem("UPDATE INVENTORY SAVE", "inventorModi")]
-    public int[] inven = new int[5];
+    [SerializeField] public int[] _temp = new int[5];
 
-    // Start is called before the first frame update
     void Start()
     {
+        _temp = SaveData.current.inventory;
 
+        SaveManager.current.onSave += OnSaveGame;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void OnSaveGame()
     {
+        print("loaded save inv");
 
+        _temp = SaveData.current.inventory;
     }
 
-    public void inventorModi()
+    public void saveArrayToInventory()
     {
-        ModifyInventory(inven);
-    }
-
-    public IEnumerator waitTilLoaded()
-    {
-        if (!SerializationManager.Save("0", SaveData.current))
-        {
-            print("n0o");
-            yield return new WaitForSeconds(0.1f);
-        }
-        else
-        {
-            print("yes");
-            SaveManager.current.GameSave();
-        }
+        ModifyInventory(_temp);
     }
 
     public void ModifyInventory(int[] arrayForInventory)
@@ -44,7 +51,7 @@ public class OverideSaveData : MonoBehaviour
         {
             SaveData.current.inventory = arrayForInventory;
             SerializationManager.Save("0", SaveData.current);
-            StartCoroutine(waitTilLoaded());
+            SaveManager.current.GameSaveInvoke();
         }
         else
             Debug.LogError("this cannot be done");

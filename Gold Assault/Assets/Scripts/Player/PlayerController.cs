@@ -73,10 +73,10 @@ public class PlayerController : MonoBehaviour
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            MadeSomeNoise();
-        }
+        // if (Input.GetKeyDown(KeyCode.L))
+        // {
+        //     MadeSomeNoise();
+        // }
 
         //move /= speedNurf;
 
@@ -207,28 +207,8 @@ public class PlayerController : MonoBehaviour
             if (predicted.x <= upperLimit.x && predicted.y <= upperLimit.y && predicted.x >= lowerLimit.x && predicted.y >= lowerLimit.y)
             {
                 CC.Move(move2);
-                // if (transform.localPosition == predicted)
-                //     print("Sucsess");
-                // else
-                //     Debug.LogError("Failure");
 
             }
-            // else if (transform.localPosition.x > upperLimit.x)
-            // {
-            //     ChangeLocalPositionController(new Vector3(upperLimit.x, transform.localPosition.y, transform.localPosition.z));
-            // }
-            // else if (transform.localPosition.y > upperLimit.y)
-            // {
-            //     ChangeLocalPositionController(new Vector3(transform.localPosition.x, upperLimit.y, transform.localPosition.z));
-            // }
-            // else if (transform.localPosition.x < lowerLimit.x)
-            // {
-            //     ChangeLocalPositionController(new Vector3(lowerLimit.x, transform.localPosition.y, transform.localPosition.z));
-            // }
-            // else if (transform.localPosition.y < lowerLimit.y)
-            // {
-            //     ChangeLocalPositionController(new Vector3(transform.localPosition.x, lowerLimit.y, transform.localPosition.z));
-            // }
 
 
             if (Input.GetKeyDown(KeyCode.C))
@@ -251,14 +231,6 @@ public class PlayerController : MonoBehaviour
                 transform.SetParent(null);
                 isRappelling = false;
             }
-
-
-            //CC.Move(move2);
-
-            // print((((transform.position - old) / speed) / Time.smoothDeltaTime) - move.normalized);
-            // print(old + move2 + " | " + transform.position);
-
-            //print(transform.localPosition + " " + old);
 
             velocity.y = 0f;
 

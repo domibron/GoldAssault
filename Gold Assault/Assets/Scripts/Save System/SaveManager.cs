@@ -8,12 +8,12 @@ using System;
 
 public class SaveManager : MonoBehaviour
 {
-    public static SaveManager current { get; private set; }
+    public static SaveManager current;
 
     public string saveName = "0";
 
     public event Action onSave;
-    public void GameSave()
+    public void GameSaveInvoke()
     {
         if (onSave != null)
         {
@@ -33,13 +33,13 @@ public class SaveManager : MonoBehaviour
             DontDestroyOnLoad(this);
         }
 
-        SerializationManager.Load(Application.persistentDataPath + "/saves/0.save");
+        SaveData.current = (SaveData)SerializationManager.Load(Application.persistentDataPath + "/saves/0.save");
     }
 
     public void OnSave()
     {
         SerializationManager.Save(saveName, SaveData.current);
-        GameSave();
+        GameSaveInvoke();
     }
 
     // public string[] saveFiles;
@@ -53,21 +53,24 @@ public class SaveManager : MonoBehaviour
     //     saveFiles = Directory.GetFiles(Application.persistentDataPath + "/saves/");
     // }
 
-    public int[] getCurrentInventory()
-    {
-        if (!Directory.Exists(Application.persistentDataPath + "/saves/" + "0.save"))
-        {
-            //Directory.CreateDirectory(Application.persistentDataPath + "/saves/" + "0.save");
-            print("no");
-            //SerializationManager.Save("0", SaveData.current);
-            //return null;
-            print(SaveData.current.inventory);
-        }
+    // public int[] getCurrentInventory()
+    // {
 
-        SaveData.current = (SaveData)SerializationManager.Load(Application.persistentDataPath + "/saves/0.save");
+    //     // if (!Directory.Exists(Application.persistentDataPath + "/saves/0.save")) // * its a directory and not a file?? no its a file so use IO file
+    //     // {
+    //     //     //Directory.CreateDirectory(Application.persistentDataPath + "/saves/" + "0.save");
+    //     //     print("no");
+    //     //     //SerializationManager.Save("0", SaveData.current);
+    //     //     //return null;
+    //     //     //SaveData.current = (SaveData)SerializationManager.Load(Application.persistentDataPath + "/saves/0.save");
+    //     //     print(SaveData.current.inventory[1]);
+    //     // }
 
-        return SaveData.current.inventory;
-    }
+
+    //     SaveData.current = (SaveData)SerializationManager.Load(Application.persistentDataPath + "/saves/0.save");
+
+    //     return SaveData.current.inventory;
+    // }
 
     //public static int[] _tempInv = { 0, 0, 0, 0, 0 };
 

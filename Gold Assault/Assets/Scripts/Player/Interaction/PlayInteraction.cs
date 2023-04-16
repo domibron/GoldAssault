@@ -1,4 +1,7 @@
 using UnityEngine;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 public class PlayInteraction : MonoBehaviour
 {
@@ -24,23 +27,30 @@ public class PlayInteraction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_currentSelection != null) _slectionResponse.OnDeselect(_currentSelection);
-
-        _selector.Check(_rayProvider.CreateRay());
-        _currentSelection = _selector.GetSelection();
-
-        // local - solid this pelase
-        if (_currentSelection != null)
+        try
         {
-            _interaction = _currentSelection.GetComponent<ItemInteract>();
+            if (_currentSelection != null) _slectionResponse.OnDeselect(_currentSelection);
 
-            if (Input.GetKeyDown(KeyCode.F))
+            _selector.Check(_rayProvider.CreateRay());
+            _currentSelection = _selector.GetSelection();
+
+            // local - solid this pelase
+            if (_currentSelection != null)
             {
-                _interaction.OnInteraction();
-            }
-        }
+                _interaction = _currentSelection.GetComponent<ItemInteract>();
 
-        if (_currentSelection != null) _slectionResponse.OnSelect(_currentSelection);
+                if (Input.GetKeyDown(KeyCode.F))
+                {
+                    _interaction.OnInteraction();
+                }
+            }
+
+            if (_currentSelection != null) _slectionResponse.OnSelect(_currentSelection);
+        }
+        catch (NullReferenceException)
+        {
+            // no
+        }
     }
 }
 

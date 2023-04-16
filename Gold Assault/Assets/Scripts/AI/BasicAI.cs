@@ -115,7 +115,6 @@ public class BasicAI : MonoBehaviour, INoiseAlert
             if (hit.collider.transform.tag == "Player")
             {
                 lastCheckSeenPlayer = true;
-                print("yes");
                 // transform.LookAt(playerTarg);
 
                 // disable rotatemove.
@@ -126,7 +125,6 @@ public class BasicAI : MonoBehaviour, INoiseAlert
             else
             {
                 lastCheckSeenPlayer = false;
-                print("no");
 
                 agent.angularSpeed = 120;
             }

@@ -36,7 +36,7 @@ public class InventoryManager : MonoBehaviour
         {
             if (!overrideInventory) // get rid of the if statement on release, because people attually want to use their weapons. might no, as its usful.
             {
-                SetUpInventory(SaveManager.current.getCurrentInventory());
+                SetUpInventory(SaveData.current.inventory);
 
             }
             else if (overrideInventory)

@@ -36,7 +36,10 @@ public class MenuManager : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadSceneAsync(1, LoadSceneMode.Single);
+        if (GameManager.current != null)
+            GameManager.current.Loadlobby();
+        else
+            SceneManager.LoadSceneAsync(1, LoadSceneMode.Single);
 
     }
 

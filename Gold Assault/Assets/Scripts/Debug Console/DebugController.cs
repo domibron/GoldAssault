@@ -129,7 +129,7 @@ public class DebugController : MonoBehaviour
                         string longString = ""; // please this is complicated.
                         for (int _i = 1; _i < properties.Length; _i++)
                         {
-                            longString += properties[_i];
+                            longString += properties[_i] + " ";
                         }
                         (commandList[i] as DebugCommand<string>).Invoke(longString);
                     }

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Glock17 : Gun // index ID is 2 because it is a pistol
 {
-    public float timeTillNextShot = 1f;
 
     private Animator animator;
     bool equipped = false;
@@ -52,9 +51,9 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
 
     private void shoot()
     {
-        if (localTime <= 0.01f)
+        if (localTime <= ((GunInfo)itemInfo).fireRate)
         {
-            localTime += timeTillNextShot;
+            localTime += ((GunInfo)itemInfo).fireRate;
             animator.SetTrigger("Fire");
 
             // shoot

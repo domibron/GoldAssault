@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class LobbyManager : MonoBehaviour
 {
@@ -59,7 +60,6 @@ public class LobbyManager : MonoBehaviour
 
     private void OnSaveGame()
     {
-        SaveManager.current.getCurrentInventory();
         LoadInventory();
     }
 
@@ -113,6 +113,22 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
+    public void openLastWeaponSection(int _i)
+    {
+        for (int i = 0; i < WeaponSections.Length; i++)
+        {
+            if (i == _i - 1)
+            {
+                WeaponSections[i].SetActive(true);
+                ItemSelected(itemInformation[_i]);
+            }
+            else
+            {
+                WeaponSections[i].SetActive(false);
+            }
+        }
+    }
+
     public void closeWeaponSections()
     {
         for (int i = 0; i < WeaponSections.Length; i++)
@@ -140,43 +156,29 @@ public class LobbyManager : MonoBehaviour
 
     private void LoadInventory()
     {
-        // save data
-        // no save data?
-        // then create basic.
-
         if (SaveManager.current == null)
         {
             Debug.LogError("There was no Save Manager");
             return;
         }
 
-        int[] _tempInv = SaveManager.current.getCurrentInventory();
+        int[] _tempInv = SaveData.current.inventory;
 
         for (int i = 0; i < _tempInv.Length; i++)
         {
-            //ItemInformationForLoadout IIFL;
-
             try
             {
-                //IIFL = (ItemInformationForLoadout)Resources.Load("ItemInformation/" + plusOne + "/" + _tempInv[i]);
                 SetupItem(i, _tempInv[i]);
             }
             catch (NullReferenceException)
             {
                 Debug.LogWarningFormat("An error occurred at index {0} at slot {1}", _tempInv[i], i);
                 SetupItem(i);
-                //IIFL = (ItemInformationForLoadout)Resources.Load("ItemInformation/0");
             }
             catch (Exception e)
             {
                 Debug.LogError("cannot compleate loading of inventory" + e.GetType());
             }
-
-            //print(IIFL.name);
-
-            //ItemSlots[i].GetComponentInChildren<Image>().sprite = IIFL.image;
-
-            // player equip.
 
 
         }
@@ -202,5 +204,13 @@ public class LobbyManager : MonoBehaviour
         ItemInformationForLoadout IIFL = (ItemInformationForLoadout)Resources.Load("ItemInformation/0");
         ItemSlots[slot].GetComponentInChildren<Image>().sprite = IIFL.image;
         itemInformation[slot] = IIFL;
+    }
+
+    public void LoadMap(int id)
+    {
+        if (GameManager.current != null)
+            GameManager.current.LoadMap(id);
+        else
+            SceneManager.LoadSceneAsync(id, LoadSceneMode.Single);
     }
 }
