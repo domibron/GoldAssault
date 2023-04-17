@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour
 {
     private List<INoiseAlert> noiseAlertSub;
 
+    [SerializeField] private float currentHealth = 100f;
+    [SerializeField] private float maxHealth = 100f;
 
     private CharacterController CC;
 
