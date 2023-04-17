@@ -109,6 +109,7 @@ public class PlayerController : MonoBehaviour
                     // TODO Please rotate the camera.
 
                     transform.rotation = Quaternion.Euler(-90, parentT.eulerAngles.y, 0);
+                    // GetComponent<Animator>().SetBool("rappelling", true);
                     //cam.transform.localRotation = Quaternion.Euler(0, rot, 0);
 
                     transform.SetParent(rappellingObject.transform);
@@ -125,7 +126,6 @@ public class PlayerController : MonoBehaviour
 
                     //ChangePositionController(new Vector3(transform.position.x, transform.position.y, rappellingObject.transform.position.z));
 
-                    //GetComponent<Animator>().SetTrigger("Rappel");
                     canRappel = false;
 
                 }
@@ -251,7 +251,7 @@ public class PlayerController : MonoBehaviour
                     }
                     else if (isRappelling && !waiting)
                     {
-                        //GetComponent<Animator>().SetTrigger("RappelStopGround");
+                        // GetComponent<Animator>().SetBool("rappelling", false);
 
                         currentTime = 0f;
                         transform.rotation = Quaternion.Euler(0, rappellingObject.transform.eulerAngles.y, 0);

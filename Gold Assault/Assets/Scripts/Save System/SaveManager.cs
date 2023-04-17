@@ -36,7 +36,7 @@ public class SaveManager : MonoBehaviour
         SaveData.current = (SaveData)SerializationManager.Load(Application.persistentDataPath + "/saves/0.save");
     }
 
-    public void OnSave()
+    public void ForceSave()
     {
         SerializationManager.Save(saveName, SaveData.current);
         GameSaveInvoke();

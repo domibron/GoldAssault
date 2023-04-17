@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class BasicAI : MonoBehaviour, INoiseAlert
+public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 {
     [Header("Player and AI corilation")]
 
@@ -12,7 +12,12 @@ public class BasicAI : MonoBehaviour, INoiseAlert
 
     private Transform playerTarg;
 
-    private int currentState = 0;
+    // private int currentState = 0;
+
+    public float health = 100f;
+
+    public AIType currentAIType;
+    public State currentState;
 
     [Range(-1, 1)] private float mood = 0f; // this is a percentage; -100 to 100 percent
 
@@ -41,6 +46,23 @@ public class BasicAI : MonoBehaviour, INoiseAlert
 
     private Vector3 targetVector;
 
+    public enum State
+    {
+        dead,
+        alive,
+        alerted,
+        patrolling,
+        scared,
+        paniced,
+        raged,
+        surrender
+    }
+
+    public enum AIType
+    {
+        hostile,
+        civi
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -48,7 +70,10 @@ public class BasicAI : MonoBehaviour, INoiseAlert
         agent = GetComponent<NavMeshAgent>();
         playerTarg = GameObject.Find("Player").transform;
 
+        //! chamge
+        currentAIType = AIType.hostile;
 
+        currentState = State.alive;
     }
 
     // Update is called once per frame
@@ -56,8 +81,9 @@ public class BasicAI : MonoBehaviour, INoiseAlert
     {
         //transform.LookAt(playerTarg);
 
+        if (health <= 0)
 
-        LookAtPlayerWithLineOfSight();
+            LookAtPlayerWithLineOfSight();
 
         timer += Time.deltaTime;
 
@@ -130,7 +156,7 @@ public class BasicAI : MonoBehaviour, INoiseAlert
             }
         }
 
-        if (lastCheckSeenPlayer) transform.LookAt(playerTarg); // ! REMOVE SOON
+        if (lastCheckSeenPlayer) transform.LookAt(playerTarg); // ! REMOVE SOON, this what?
     }
 
     public void NoiseMade(Vector3 positionOfNoise)
@@ -141,5 +167,10 @@ public class BasicAI : MonoBehaviour, INoiseAlert
             targetVector = positionOfNoise;
             agent.destination = positionOfNoise;
         }
+    }
+
+    public void TakeDamage(float damage)
+    {
+        health -= damage;
     }
 }

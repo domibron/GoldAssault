@@ -11,13 +11,17 @@ public class LobbyManager : MonoBehaviour
     public GameObject LevelSelectorUI;
     public GameObject LoadoutUI;
 
+    public GameObject EquipButton;
+
     public GameObject ItemInformationSection;
 
     public GameObject[] WeaponSections;
 
     public GameObject[] ItemSlots;
 
-    public ItemInformationForLoadout[] itemInformation = new ItemInformationForLoadout[5];
+    public ItemInformationForLoadout[] itemInformations = new ItemInformationForLoadout[5];
+
+    private int[] tempInventory = new int[5];
 
     private int selectedItemSlotType = 0;
     private int selectedItemID = 0;
@@ -33,6 +37,7 @@ public class LobbyManager : MonoBehaviour
         LevelSelectorUI.SetActive(false);
         LoadoutUI.SetActive(false);
         ItemInformationSection.SetActive(false);
+        EquipButton.SetActive(false);
 
         closeWeaponSections();
 
@@ -104,7 +109,7 @@ public class LobbyManager : MonoBehaviour
             if (i == _i)
             {
                 WeaponSections[i].SetActive(true);
-                ItemSelected(itemInformation[i]);
+                ItemSelectedDisableButton(itemInformations[i]);
             }
             else
             {
@@ -120,7 +125,7 @@ public class LobbyManager : MonoBehaviour
             if (i == _i - 1)
             {
                 WeaponSections[i].SetActive(true);
-                ItemSelected(itemInformation[_i]);
+                ItemSelectedDisableButton(itemInformations[_i]);
             }
             else
             {
@@ -146,12 +151,38 @@ public class LobbyManager : MonoBehaviour
         selectedItemSlotType = itemInformation.ItemSlotType;
         selectedItemID = itemInformation.IndexOfItem;
 
+        if (itemInformation != itemInformations[selectedItemSlotType - 1])
+            EquipButton.SetActive(true);
+        else
+            EquipButton.SetActive(false);
+
         ItemInformationSection.SetActive(true);
     }
 
-    public void EquipItem(int slotType, int index)
+    public void ItemSelectedDisableButton(ItemInformationForLoadout itemInformation)
     {
+        ItemName.text = itemInformation.nameOfItem;
+        ItemImage.sprite = itemInformation.image;
+        ItemDescription.text = itemInformation.description;
 
+        selectedItemSlotType = itemInformation.ItemSlotType;
+        selectedItemID = itemInformation.IndexOfItem;
+
+        EquipButton.SetActive(false);
+
+        ItemInformationSection.SetActive(true);
+    }
+
+    public void EquipItem()
+    {
+        tempInventory[selectedItemSlotType - 1] = selectedItemID;
+    }
+
+    public void EquipAllItems()
+    {
+        // tempInventory[selectedItemSlotType] = selectedItemID;
+        SaveData.current.inventory = tempInventory;
+        SaveManager.current.ForceSave();
     }
 
     private void LoadInventory()
@@ -163,6 +194,7 @@ public class LobbyManager : MonoBehaviour
         }
 
         int[] _tempInv = SaveData.current.inventory;
+        tempInventory = SaveData.current.inventory;
 
         for (int i = 0; i < _tempInv.Length; i++)
         {
@@ -190,7 +222,7 @@ public class LobbyManager : MonoBehaviour
         {
             ItemInformationForLoadout IIFL = (ItemInformationForLoadout)Resources.Load("ItemInformation/" + (slot + 1) + "/" + id);
             ItemSlots[slot].GetComponentInChildren<Image>().sprite = IIFL.image;
-            itemInformation[slot] = IIFL;
+            itemInformations[slot] = IIFL;
 
         }
         catch
@@ -203,7 +235,7 @@ public class LobbyManager : MonoBehaviour
     {
         ItemInformationForLoadout IIFL = (ItemInformationForLoadout)Resources.Load("ItemInformation/0");
         ItemSlots[slot].GetComponentInChildren<Image>().sprite = IIFL.image;
-        itemInformation[slot] = IIFL;
+        itemInformations[slot] = IIFL;
     }
 
     public void LoadMap(int id)
