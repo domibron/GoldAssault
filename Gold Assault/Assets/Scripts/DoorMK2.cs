@@ -27,21 +27,35 @@ public class DoorMK2 : MonoBehaviour
 
     //* AI incoperation, the AI cannot see the door, they will attempt to go through them.
 
-    void OnCollisionEnter(Collision other)
+    void OnTriggerEnter(Collider other)
     {
+        print("dete");
+
         if (other.transform.tag == "AI")
         {
-            if (!isOpen && !isOtherDoorOpen)
+            if (door2 != null)
             {
-                OpenAndCloseBothDoors(other.transform);
+                print("ran");
+                if (!isOpen && !isOtherDoorOpen)
+                {
+                    OpenAndCloseBothDoors(other.transform);
+                }
+                else if (isOpen && !isOtherDoorOpen)
+                {
+                    OpenAndCloseOtherDoor(other.transform);
+                }
+                else if (!isOpen && isOtherDoorOpen)
+                {
+                    OpenAndClose(other.transform);
+                }
             }
-            else if (isOpen && !isOtherDoorOpen)
+            else
             {
-                OpenAndCloseOtherDoor(other.transform);
-            }
-            else if (!isOpen && isOtherDoorOpen)
-            {
-                OpenAndClose(other.transform);
+                print("ran");
+                if (!isOpen)
+                {
+                    OpenAndClose(other.transform);
+                }
             }
         }
     }
@@ -59,6 +73,8 @@ public class DoorMK2 : MonoBehaviour
             rb.velocity = Vector3.zero;
             door.transform.rotation = Quaternion.identity;
         }
+
+        print(Quaternion.Dot(door.transform.localRotation, Quaternion.Euler(0, 0, 0)) + " " + currentTime);
 
         if (door2 != null)
         {

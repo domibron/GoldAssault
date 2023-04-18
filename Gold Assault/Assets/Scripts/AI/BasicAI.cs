@@ -5,9 +5,8 @@ using UnityEngine.AI;
 
 public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 {
-    [Header("Player and AI corilation")]
+    [Header("Player and AI corilation")] // ! https://youtu.be/UjkSFoLxesw
 
-    [SerializeField] private Transform movePositionTransform;
     private NavMeshAgent agent;
 
     private Transform playerTarg;
@@ -70,7 +69,7 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
         agent = GetComponent<NavMeshAgent>();
         playerTarg = GameObject.Find("Player").transform;
 
-        //! chamge
+        //! chamge to random
         currentAIType = AIType.hostile;
 
         currentState = State.alive;
@@ -82,8 +81,11 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
         //transform.LookAt(playerTarg);
 
         if (health <= 0)
+        {
 
-            LookAtPlayerWithLineOfSight();
+        }
+
+        LookAtPlayerWithLineOfSight();
 
         timer += Time.deltaTime;
 
