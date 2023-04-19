@@ -29,29 +29,37 @@ public class DoorMK2 : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        print("dete");
 
         if (other.transform.tag == "AI")
         {
             if (door2 != null)
             {
-                print("ran");
-                if (!isOpen && !isOtherDoorOpen)
+
+                if (isOpen && isOtherDoorOpen)
+                {
+
+                }
+                else
                 {
                     OpenAndCloseBothDoors(other.transform);
+
                 }
-                else if (isOpen && !isOtherDoorOpen)
-                {
-                    OpenAndCloseOtherDoor(other.transform);
-                }
-                else if (!isOpen && isOtherDoorOpen)
-                {
-                    OpenAndClose(other.transform);
-                }
+
+                // if (!isOpen && !isOtherDoorOpen)
+                // {
+                //     OpenAndCloseBothDoors(other.transform);
+                // }
+                // else if (isOpen && !isOtherDoorOpen)
+                // {
+                //     OpenAndCloseOtherDoor(other.transform);
+                // }
+                // else if (!isOpen && isOtherDoorOpen)
+                // {
+                //     OpenAndClose(other.transform);
+                // }
             }
             else
             {
-                print("ran");
                 if (!isOpen)
                 {
                     OpenAndClose(other.transform);
@@ -72,9 +80,16 @@ public class DoorMK2 : MonoBehaviour
             Rigidbody rb = door.GetComponent<Rigidbody>();
             rb.velocity = Vector3.zero;
             door.transform.rotation = Quaternion.identity;
+            isOpen = false;
         }
-
-        print(Quaternion.Dot(door.transform.localRotation, Quaternion.Euler(0, 0, 0)) + " " + currentTime);
+        else if (Quaternion.Dot(door.transform.localRotation, Quaternion.Euler(0, 0, 0)) >= 0.995f)
+        {
+            isOpen = false;
+        }
+        else
+        {
+            isOpen = true;
+        }
 
         if (door2 != null)
         {
@@ -86,6 +101,15 @@ public class DoorMK2 : MonoBehaviour
                 Rigidbody rb = door2.GetComponent<Rigidbody>();
                 rb.velocity = Vector3.zero;
                 door2.transform.rotation = Quaternion.identity;
+                isOtherDoorOpen = false;
+            }
+            else if (Quaternion.Dot(door2.transform.localRotation, Quaternion.Euler(0, 0, 0)) >= 0.995f)
+            {
+                isOtherDoorOpen = false;
+            }
+            else
+            {
+                isOtherDoorOpen = true;
             }
         }
     }
@@ -107,14 +131,14 @@ public class DoorMK2 : MonoBehaviour
 
     private void DoorOpenClose(Transform player)
     {
-        if (Quaternion.Dot(door.transform.localRotation, Quaternion.Euler(0, 0, 0)) >= 0.995f)
-        {
-            isOpen = false;
-        }
-        else
-        {
-            isOpen = true;
-        }
+        // if (Quaternion.Dot(door.transform.localRotation, Quaternion.Euler(0, 0, 0)) >= 0.995f)
+        // {
+        //     isOpen = false;
+        // }
+        // else
+        // {
+        //     isOpen = true;
+        // }
 
         currentTime = 0;
 
@@ -145,14 +169,14 @@ public class DoorMK2 : MonoBehaviour
 
     private void DoorOpenCloseOther(Transform player)
     {
-        if (Quaternion.Dot(door2.transform.localRotation, Quaternion.Euler(0, 0, 0)) >= 0.995f)
-        {
-            isOtherDoorOpen = false;
-        }
-        else
-        {
-            isOtherDoorOpen = true;
-        }
+        // if (Quaternion.Dot(door2.transform.localRotation, Quaternion.Euler(0, 0, 0)) >= 0.995f)
+        // {
+        //     isOtherDoorOpen = false;
+        // }
+        // else
+        // {
+        //     isOtherDoorOpen = true;
+        // }
 
         currentTimeOther = 0;
 
@@ -189,13 +213,17 @@ public class DoorMK2 : MonoBehaviour
         }
 
         if (!isOpen && isOtherDoorOpen)
+        {
             DoorOpenClose(player);
+        }
         else if (isOpen && !isOtherDoorOpen)
-            DoorOpenCloseOther(player);
+        {
+            OpenAndCloseOtherDoor(player);
+        }
         else
         {
             DoorOpenClose(player);
-            DoorOpenCloseOther(player);
+            OpenAndCloseOtherDoor(player);
         }
 
     }

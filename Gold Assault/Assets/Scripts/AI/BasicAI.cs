@@ -9,6 +9,8 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 
     private NavMeshAgent agent;
 
+    [SerializeField] private float angularSpeed = 120;
+
     private Transform playerTarg;
 
     // private int currentState = 0;
@@ -154,7 +156,7 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
             {
                 lastCheckSeenPlayer = false;
 
-                agent.angularSpeed = 120;
+                agent.angularSpeed = angularSpeed;
             }
         }
 
