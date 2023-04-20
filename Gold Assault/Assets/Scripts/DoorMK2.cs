@@ -34,29 +34,14 @@ public class DoorMK2 : MonoBehaviour
         {
             if (door2 != null)
             {
-
                 if (isOpen && isOtherDoorOpen)
                 {
-
+                    // ...
                 }
                 else
                 {
                     OpenAndCloseBothDoors(other.transform);
-
                 }
-
-                // if (!isOpen && !isOtherDoorOpen)
-                // {
-                //     OpenAndCloseBothDoors(other.transform);
-                // }
-                // else if (isOpen && !isOtherDoorOpen)
-                // {
-                //     OpenAndCloseOtherDoor(other.transform);
-                // }
-                // else if (!isOpen && isOtherDoorOpen)
-                // {
-                //     OpenAndClose(other.transform);
-                // }
             }
             else
             {
@@ -119,16 +104,6 @@ public class DoorMK2 : MonoBehaviour
         DoorOpenClose(player);
     }
 
-    public void OpenAndCloseOtherDoor(Transform player)
-    {
-        if (door2 == null)
-        {
-            throw new NullReferenceException();
-        }
-
-        DoorOpenCloseOther(player);
-    }
-
     private void DoorOpenClose(Transform player)
     {
         // if (Quaternion.Dot(door.transform.localRotation, Quaternion.Euler(0, 0, 0)) >= 0.995f)
@@ -178,6 +153,11 @@ public class DoorMK2 : MonoBehaviour
         //     isOtherDoorOpen = true;
         // }
 
+        if (door2 == null)
+        {
+            throw new NullReferenceException();
+        }
+
         currentTimeOther = 0;
 
         Vector3 dirWithPlayer = door2.transform.position - player.position;
@@ -218,12 +198,12 @@ public class DoorMK2 : MonoBehaviour
         }
         else if (isOpen && !isOtherDoorOpen)
         {
-            OpenAndCloseOtherDoor(player);
+            DoorOpenCloseOther(player);
         }
         else
         {
             DoorOpenClose(player);
-            OpenAndCloseOtherDoor(player);
+            DoorOpenCloseOther(player);
         }
 
     }
