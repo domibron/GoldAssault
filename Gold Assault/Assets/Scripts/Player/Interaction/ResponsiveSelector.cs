@@ -6,7 +6,7 @@ public class ResponsiveSelector : MonoBehaviour, ISelector
 {
     [SerializeField] private List<GameObject> selectables;
     [SerializeField] private float threshold = 0.9f;
-    [SerializeField] private float maxDistance = 5f;
+    [SerializeField] public float maxDistance = 5f;
 
     private Transform _selection;
 

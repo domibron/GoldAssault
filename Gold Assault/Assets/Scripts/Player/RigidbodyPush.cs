@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class RigidbodyPush : MonoBehaviour
 {
     [SerializeField]
     private float forcePower = 2f;
+
+    public string[] IgnoreTags;
 
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
@@ -15,6 +18,11 @@ public class RigidbodyPush : MonoBehaviour
 
         if (rb != null)
         {
+            if (IgnoreTags.All(hit.transform.tag.Contains))
+            {
+                return;
+            }
+
             Vector3 forceDirection = hit.gameObject.transform.position - transform.position;
             forceDirection.y = 0;
             forceDirection.Normalize();
