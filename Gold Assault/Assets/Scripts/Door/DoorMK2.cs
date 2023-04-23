@@ -246,7 +246,7 @@ public class DoorMK2 : MonoBehaviour
     {
         door.GetComponent<Rigidbody>().drag = 10;
         DoorOpenClose(player);
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(disableTime);
         door.GetComponent<Rigidbody>().drag = 1;
     }
 
@@ -329,8 +329,6 @@ public class DoorMK2 : MonoBehaviour
         }
     }
 
-    // TODO applie changes from door to other door.
-
     #region Other door
 
     public void OpenCloseOther(Transform player)
@@ -347,7 +345,7 @@ public class DoorMK2 : MonoBehaviour
     {
         door2.GetComponent<Rigidbody>().drag = 10;
         DoorOtherOpenClose(player);
-        yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(disableTime);
         door2.GetComponent<Rigidbody>().drag = 1;
     }
 
@@ -484,7 +482,6 @@ public class DoorMK2 : MonoBehaviour
             throw new NullReferenceException();
         }
 
-        // ! make into the visual the hiding the force both doors.
         if (!isOpen && !isOtherDoorOpen)
         {
             ForceDoors(player);
