@@ -5,7 +5,7 @@ using System;
 
 public class HideAndShowInteraction : MonoBehaviour
 {
-    public float maxRange = 4;
+    public float maxRange = 3;
 
     public GameObject child;
 
@@ -36,7 +36,7 @@ public class HideAndShowInteraction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        print(Vector3.Distance(transform.position, player.position));
+        //print(Vector3.Distance(transform.position, player.position));
 
         if (Vector3.Distance(transform.position, player.position) <= 4)
         {
