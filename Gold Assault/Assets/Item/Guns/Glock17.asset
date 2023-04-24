@@ -18,5 +18,5 @@ MonoBehaviour:
   fireRate: 0.05
   reloadSpeed: 1.5
   maxAmmoInClip: 17
-  maxAmmoInReserve: 3
+  maxAmmoMags: 4
   startingPos: {x: 0, y: 0, z: 0}

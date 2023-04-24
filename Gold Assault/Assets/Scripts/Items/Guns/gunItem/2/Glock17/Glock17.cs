@@ -11,9 +11,15 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
     private float localTime = 0f;
     private float delay = 0f;
 
+    private Transform player;
+    private Camera cam;
+
     // Start is called before the first frame update
     void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+        cam = Camera.main;
+
         animator = GetComponent<Animator>();
         equipped = false;
     }
@@ -56,8 +62,19 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
             localTime += ((GunInfo)itemInfo).fireRate;
             animator.SetTrigger("Fire");
 
+            foreach (GameObject go in PlayerRefernceItems.AINoiseAlertSubs)
+            {
+                go.GetComponent<INoiseAlert>().NoiseMade(player.position);
+            }
+
             // shoot
-            Debug.DrawLine(transform.position, transform.forward * 10f, Color.blue, 0.5f);
+            Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, float.MaxValue))
+            {
+                hit.collider.gameObject.GetComponent<IDamagable>()?.TakeDamage(((GunInfo)itemInfo).damage);
+            }
+
         }
 
 

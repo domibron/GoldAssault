@@ -16,6 +16,7 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
     // private int currentState = 0;
 
     public float health = 100f;
+    private float maxHealth = 100f;
 
     public AIType currentAIType;
     public State currentState;
@@ -56,7 +57,8 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
         scared,
         paniced,
         raged,
-        surrender
+        surrender,
+        engaging
     }
 
     public enum AIType
@@ -64,6 +66,10 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
         hostile,
         civi
     }
+
+    private float TimeTilNextShot = 1f;
+    private float currentTime = 0f;
+
 
     // Start is called before the first frame update
     void Start()
@@ -84,10 +90,21 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 
         if (health <= 0)
         {
+            currentState = State.dead;
 
+            // for now I will remove the game object.
+            Destroy(gameObject);
         }
 
+        if (currentTime <= TimeTilNextShot) currentTime += Time.deltaTime;
+
         LookAtPlayerWithLineOfSight();
+
+        if (lastCheckSeenPlayer) // some are temp.
+        {
+            transform.LookAt(playerTarg);
+            shoot();
+        }
 
         timer += Time.deltaTime;
 
@@ -160,7 +177,21 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
             }
         }
 
-        if (lastCheckSeenPlayer) transform.LookAt(playerTarg); // ! REMOVE SOON, this what?
+        // if (lastCheckSeenPlayer) transform.LookAt(playerTarg); // ! remove this and ctreate proper logic for the AI, this is not good, and should not be here
+    }
+
+    private void shoot()
+    {
+        // shoot at the player.
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.forward, out hit))
+        {
+            if (currentTime >= TimeTilNextShot)
+            {
+                currentTime = 0;
+                hit.collider.GetComponent<IDamagable>()?.TakeDamage(5f);
+            }
+        }
     }
 
     public void NoiseMade(Vector3 positionOfNoise)

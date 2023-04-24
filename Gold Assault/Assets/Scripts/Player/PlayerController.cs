@@ -4,8 +4,9 @@ using UnityEngine;
 using Interface.IInteractable;
 using UnityEngine.UI;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamagable
 {
     private List<INoiseAlert> noiseAlertSub;
 
@@ -51,6 +52,8 @@ public class PlayerController : MonoBehaviour
 
     private float currentTime = 0f;
 
+    public Image HurtImage;
+
     // * for the inventory so this knows what is equiped.
     public GameObject[] L_inventory = new GameObject[5];
 
@@ -65,20 +68,33 @@ public class PlayerController : MonoBehaviour
 
         rappelInteraction.SetActive(false);
 
-        noiseAlertSub = new List<INoiseAlert>(FindObjectsOfType<Object>().OfType<INoiseAlert>());
-
+        // noiseAlertSub = new List<INoiseAlert>(FindObjectsOfType<Object>().OfType<INoiseAlert>());
+        PlayerRefernceItems.AINoiseAlertSubs = new List<GameObject>(FindObjectsOfType<Object>().OfType<INoiseAlert>().OfType<GameObject>());
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (currentHealth <= 0)
+        {
+            SceneManager.LoadScene(SceneManager.GetSceneAt(0).buildIndex);
+        }
+
+        float ans = currentHealth / maxHealth;
+        ans = 1 - ans;
+        //ans = 127.5f * ans;
+        HurtImage.color = new Color(255, 0, 0, ans);
+
+        print(ans);
+
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
 
-        // if (Input.GetKeyDown(KeyCode.L))
-        // {
-        //     MadeSomeNoise();
-        // }
+        // remove
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            MadeSomeNoise();
+        }
 
         //move /= speedNurf;
 
@@ -422,7 +438,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+    }
 
 
 
@@ -495,7 +514,4 @@ public class PlayerController : MonoBehaviour
         CC.enabled = true;
         // print("d");
     }
-
-
-
 }
