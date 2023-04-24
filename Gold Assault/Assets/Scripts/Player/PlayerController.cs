@@ -85,7 +85,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         //ans = 127.5f * ans;
         HurtImage.color = new Color(255, 0, 0, ans);
 
-        print(ans);
+        // print(ans);
 
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");

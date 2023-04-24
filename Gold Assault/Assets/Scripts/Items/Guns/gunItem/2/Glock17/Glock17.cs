@@ -6,13 +6,16 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
 {
 
     private Animator animator;
-    bool equipped = false;
+    private bool equipped = false;
 
     private float localTime = 0f;
     private float delay = 0f;
 
     private Transform player;
     private Camera cam;
+
+    public AudioClip audioClip;
+    public AudioSource audioSource;
 
     // Start is called before the first frame update
     void Start()
@@ -22,6 +25,7 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
 
         animator = GetComponent<Animator>();
         equipped = false;
+
     }
 
     // Update is called once per frame
@@ -61,6 +65,9 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
         {
             localTime += ((GunInfo)itemInfo).fireRate;
             animator.SetTrigger("Fire");
+
+            audioSource.clip = audioClip;
+            audioSource.Play(); // get the audio source in code.
 
             foreach (GameObject go in PlayerRefernceItems.AINoiseAlertSubs)
             {
