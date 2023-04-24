@@ -19,11 +19,24 @@ public class InventoryManager : MonoBehaviour
     {
         // * singletons
         // _Master = get the thingy that allows to only have one 
+
+        try
+        {
+
+
+        }
+        catch
+        {
+
+
+        }
+
+
         try // this is to stop the game from crashing / complaining if the Master was not loaded. it will still load base weapons.
         {
-            if (!overrideInventory) // get rid of the if statement on release, because people attually want to use their weapons.
+            if (!overrideInventory) // get rid of the if statement on release, because people attually want to use their weapons. might no, as its usful.
             {
-                throw new System.NullReferenceException();
+                SetUpInventory(SaveData.current.inventory);
 
             }
             else if (overrideInventory)
@@ -108,7 +121,7 @@ public class InventoryManager : MonoBehaviour
             }
             catch (NullReferenceException e)
             {
-                Debug.LogWarning($"NRE! - {e.Message} at {e.Source} \n" +
+                Debug.LogWarning($"NRE! - {e.Message} at {e.TargetSite} \n" +
                 $"Error trying to Instantiate. Index: {i + 1} weapon ID: {itemID[i]}");
                 CreateItem(i + 1); // this still creates the 0 object.
             }

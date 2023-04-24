@@ -3,9 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using Interface.IInteractable;
 using UnityEngine.UI;
+using System.Linq;
 
 public class PlayerController : MonoBehaviour
 {
+    private List<INoiseAlert> noiseAlertSub;
+
+    [SerializeField] private float currentHealth = 100f;
+    [SerializeField] private float maxHealth = 100f;
+
     private CharacterController CC;
 
     private GameObject cam;
@@ -58,6 +64,9 @@ public class PlayerController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         rappelInteraction.SetActive(false);
+
+        noiseAlertSub = new List<INoiseAlert>(FindObjectsOfType<Object>().OfType<INoiseAlert>());
+
     }
 
     // Update is called once per frame
@@ -66,7 +75,10 @@ public class PlayerController : MonoBehaviour
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
 
-
+        // if (Input.GetKeyDown(KeyCode.L))
+        // {
+        //     MadeSomeNoise();
+        // }
 
         //move /= speedNurf;
 
@@ -99,6 +111,7 @@ public class PlayerController : MonoBehaviour
                     // TODO Please rotate the camera.
 
                     transform.rotation = Quaternion.Euler(-90, parentT.eulerAngles.y, 0);
+                    // GetComponent<Animator>().SetBool("rappelling", true);
                     //cam.transform.localRotation = Quaternion.Euler(0, rot, 0);
 
                     transform.SetParent(rappellingObject.transform);
@@ -115,7 +128,6 @@ public class PlayerController : MonoBehaviour
 
                     //ChangePositionController(new Vector3(transform.position.x, transform.position.y, rappellingObject.transform.position.z));
 
-                    //GetComponent<Animator>().SetTrigger("Rappel");
                     canRappel = false;
 
                 }
@@ -197,28 +209,8 @@ public class PlayerController : MonoBehaviour
             if (predicted.x <= upperLimit.x && predicted.y <= upperLimit.y && predicted.x >= lowerLimit.x && predicted.y >= lowerLimit.y)
             {
                 CC.Move(move2);
-                // if (transform.localPosition == predicted)
-                //     print("Sucsess");
-                // else
-                //     Debug.LogError("Failure");
 
             }
-            // else if (transform.localPosition.x > upperLimit.x)
-            // {
-            //     ChangeLocalPositionController(new Vector3(upperLimit.x, transform.localPosition.y, transform.localPosition.z));
-            // }
-            // else if (transform.localPosition.y > upperLimit.y)
-            // {
-            //     ChangeLocalPositionController(new Vector3(transform.localPosition.x, upperLimit.y, transform.localPosition.z));
-            // }
-            // else if (transform.localPosition.x < lowerLimit.x)
-            // {
-            //     ChangeLocalPositionController(new Vector3(lowerLimit.x, transform.localPosition.y, transform.localPosition.z));
-            // }
-            // else if (transform.localPosition.y < lowerLimit.y)
-            // {
-            //     ChangeLocalPositionController(new Vector3(transform.localPosition.x, lowerLimit.y, transform.localPosition.z));
-            // }
 
 
             if (Input.GetKeyDown(KeyCode.C))
@@ -242,14 +234,6 @@ public class PlayerController : MonoBehaviour
                 isRappelling = false;
             }
 
-
-            //CC.Move(move2);
-
-            // print((((transform.position - old) / speed) / Time.smoothDeltaTime) - move.normalized);
-            // print(old + move2 + " | " + transform.position);
-
-            //print(transform.localPosition + " " + old);
-
             velocity.y = 0f;
 
 
@@ -269,7 +253,7 @@ public class PlayerController : MonoBehaviour
                     }
                     else if (isRappelling && !waiting)
                     {
-                        //GetComponent<Animator>().SetTrigger("RappelStopGround");
+                        // GetComponent<Animator>().SetBool("rappelling", false);
 
                         currentTime = 0f;
                         transform.rotation = Quaternion.Euler(0, rappellingObject.transform.eulerAngles.y, 0);
@@ -430,6 +414,24 @@ public class PlayerController : MonoBehaviour
         isGrounded = _isGrounded;
     }
 
+    private void MadeSomeNoise()
+    {
+        foreach (INoiseAlert ina in noiseAlertSub)
+        {
+            ina.NoiseMade(transform.position);
+        }
+    }
+
+
+
+
+
+
+
+
+    // !========================================================================   no   =========================================================================================
+
+
     public void ChangePositionController(GameObject targetObj)
     {
         StartCoroutine(ChangePos(targetObj));
@@ -493,4 +495,7 @@ public class PlayerController : MonoBehaviour
         CC.enabled = true;
         // print("d");
     }
+
+
+
 }

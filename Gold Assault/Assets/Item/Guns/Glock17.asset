@@ -15,8 +15,8 @@ MonoBehaviour:
   ItemName: Glock17
   ItemID: 1
   damage: 17
-  fireRate: 1
+  fireRate: 0.05
   reloadSpeed: 1.5
   maxAmmoInClip: 17
-  maxAmmoInReserve: 68
+  maxAmmoInReserve: 3
   startingPos: {x: 0, y: 0, z: 0}

@@ -1,0 +1,29 @@
+{
+    "name": "Project.External",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8a2eafa29b15f444eb6d74f94a930e1d",
+        "GUID:2665a8d13d1b3f18800f46e256720795",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:e0cd26848372d4e5c891c569017e11f1",
+        "GUID:3331370e4c1697e4d9a1f76e19219549",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:fe25561d224ed4743af4c60938a59d0b",
+        "GUID:2bafac87e7f4b9b418d9448d219b01ab",
+        "GUID:f06555f75b070af458a003d92f9efb00",
+        "GUID:657d390aefbac35438948143108d3a13",
+        "GUID:b9d496eb726330f468d6d9f02ce05455",
+        "GUID:102192e06133e6a418c0dd92abf014f1",
+        "GUID:8ba33e6bd84657e409ef874ae8f4ec3a",
+        "GUID:14772a1d54dbe8e4ba767d4fb73c240e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

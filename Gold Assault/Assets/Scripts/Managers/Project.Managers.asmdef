@@ -1,0 +1,21 @@
+{
+    "name": "Project.Managers",
+    "rootNamespace": "",
+    "references": [
+        "Unity.TextMeshPro",
+        "Project.Items",
+        "Project.SaveSystem",
+        "Project.MasterManager",
+        "Project.Player",
+        "Project.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

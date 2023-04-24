@@ -4,5 +4,20 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Master Scene.unity
+    guid: b1782ba3de4e6dc4d96b921ab58c98e8
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: cc87ed899232c014ab56143d5e90402e
+  - enabled: 1
+    path: Assets/Scenes/Lobby.unity
+    guid: ec9decc1b83acc241a23b2cbb70fc058
+  - enabled: 1
+    path: Assets/Scenes/Other/LoadingIntoMap.unity
+    guid: 9b8cefd8ffe01444bb5a0bf4d18590b6
+  - enabled: 1
+    path: Assets/Scenes/Maps/Embassy/Embassy.unity
+    guid: 8fee78b990a42c946978d42a9d50e77f
   m_configObjects: {}

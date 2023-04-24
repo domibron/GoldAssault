@@ -9,6 +9,6 @@ public class GunInfo : ItemInfo
     public float fireRate;
     public float reloadSpeed;
     public int maxAmmoInClip;
-    public int maxAmmoInReserve;
+    public int maxAmmoMags;
     public Vector3 startingPos;
 }

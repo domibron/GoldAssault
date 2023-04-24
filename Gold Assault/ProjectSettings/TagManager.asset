@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - WeaponCamera
+  - Selectable
+  - MGO
+  - AI
   layers:
   - Default
   - TransparentFX
@@ -12,7 +15,7 @@ TagManager:
   - Weapon
   - Water
   - UI
-  - 
+  - IgnoreNavMesh
   - 
   - Destructable Wall
   - 

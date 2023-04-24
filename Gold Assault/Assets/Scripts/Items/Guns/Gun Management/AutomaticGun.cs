@@ -34,7 +34,7 @@ public class AutomaticGun : Gun
     void Start()
     {
         currentAmmo = ((GunInfo)itemInfo).maxAmmoInClip;
-        currentReserveAmmo = ((GunInfo)itemInfo).maxAmmoInReserve;
+        //currentReserveAmmo = ((GunInfo)itemInfo).maxAmmoInReserve;
     }
 
     // Update is called once per frame
