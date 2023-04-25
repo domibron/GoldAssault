@@ -143,6 +143,7 @@ public class InventoryManager : MonoBehaviour
             // inventory[int.Parse(indexNumber)] = item;
             inventory[int.Parse(indexNumber) - 1] = item;
             item.transform.localPosition = Vector3.zero; // replace with the target position
+            item.transform.localRotation = Quaternion.identity;
             item.name = $"ID: {weaponID} Slot: {indexNumber}";
             PC.L_inventory[int.Parse(indexNumber) - 1] = item;
 
@@ -163,6 +164,7 @@ public class InventoryManager : MonoBehaviour
             // inventory[indexNumber] = item;
             inventory[indexNumber - 1] = item;
             item.transform.localPosition = Vector3.zero; // replace with the target position
+            item.transform.localRotation = Quaternion.identity;
             item.name = $"ID: {weaponID} Slot: {indexNumber}";
             PC.L_inventory[indexNumber - 1] = item;
         }
@@ -181,6 +183,7 @@ public class InventoryManager : MonoBehaviour
             // inventory[indexNumber] = item;
             inventory[indexNumber - 1] = item;
             item.transform.localPosition = Vector3.zero; // replace with the target position
+            item.transform.localRotation = Quaternion.identity;
             item.name = $"ID: DebugItem Slot: {indexNumber}";
             PC.L_inventory[indexNumber - 1] = item;
         }

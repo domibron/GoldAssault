@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemName: Glock17
   ItemID: 1
-  damage: 17
+  damage: 47
   fireRate: 0.4
   reloadSpeed: 1.5
   maxAmmoInClip: 17
