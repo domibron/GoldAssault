@@ -67,8 +67,13 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
         civi
     }
 
+    [Space, Header("AI engagement")]
+
     private float TimeTilNextShot = 1f;
     private float currentTime = 0f;
+
+    private AudioSource audioSource;
+    public AudioClip audioClip;
 
 
     // Start is called before the first frame update
@@ -76,6 +81,7 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
     {
         agent = GetComponent<NavMeshAgent>();
         playerTarg = GameObject.Find("Player").transform;
+        audioSource = GetComponent<AudioSource>();
 
         //! chamge to random
         currentAIType = AIType.hostile;
@@ -108,11 +114,20 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 
         timer += Time.deltaTime;
 
-        if (timer >= wanderingTime && !Alerted)
+        if ((timer >= wanderingTime || Vector3.Distance(transform.position, agent.pathEndPosition) < 2f) && !Alerted || !agent.hasPath)
         {
             Vector3 newPos = RandomNavSphere(transform.position, wanderRadius, -1);
-            agent.SetDestination(newPos);
-            timer = 0;
+            NavMeshPath path = new NavMeshPath();
+            if (agent.CalculatePath(newPos, path) && path.status == NavMeshPathStatus.PathComplete)
+            {
+                agent.SetDestination(newPos);
+                timer = 0;
+
+            }
+            else
+            {
+                // retry path
+            }
         }
         else
         {
@@ -190,6 +205,8 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
             {
                 currentTime = 0;
                 hit.collider.GetComponent<IDamagable>()?.TakeDamage(5f);
+                audioSource.clip = audioClip;
+                audioSource.Play();
             }
         }
     }
