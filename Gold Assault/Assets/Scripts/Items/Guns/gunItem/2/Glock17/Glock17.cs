@@ -69,10 +69,6 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
             audioSource.clip = audioClip;
             audioSource.Play(); // get the audio source in code.
 
-            foreach (GameObject go in PlayerRefernceItems.AINoiseAlertSubs)
-            {
-                go.GetComponent<INoiseAlert>().NoiseMade(player.position);
-            }
 
             // shoot
             Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
@@ -82,6 +78,10 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
                 hit.collider.gameObject.GetComponent<IDamagable>()?.TakeDamage(((GunInfo)itemInfo).damage);
             }
 
+            foreach (GameObject go in PlayerRefernceItems.current.AINoiseAlertSubs)
+            {
+                go.GetComponent<INoiseAlert>().NoiseMade(player.position);
+            }
         }
 
 

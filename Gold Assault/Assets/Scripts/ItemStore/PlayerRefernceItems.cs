@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class PlayerRefernceItems : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
+    public static PlayerRefernceItems current;
 
+    void Awake()
+    {
+        if (current != null && current != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            current = this;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
 
-    }
-
-    public static List<GameObject> AINoiseAlertSubs;
+    public List<GameObject> AINoiseAlertSubs;
 }

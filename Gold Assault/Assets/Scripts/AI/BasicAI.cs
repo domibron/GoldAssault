@@ -100,6 +100,8 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 
             // for now I will remove the game object.
             Destroy(gameObject);
+
+            return;
         }
 
         if (currentTime <= TimeTilNextShot) currentTime += Time.deltaTime;
@@ -118,6 +120,7 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
         {
             Vector3 newPos = RandomNavSphere(transform.position, wanderRadius, -1);
             NavMeshPath path = new NavMeshPath();
+
             if (agent.CalculatePath(newPos, path) && path.status == NavMeshPathStatus.PathComplete)
             {
                 agent.SetDestination(newPos);
@@ -199,11 +202,12 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
     {
         // shoot at the player.
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit))
+        if (Physics.Raycast(transform.position, transform.forward, out hit, float.MaxValue))
         {
             if (currentTime >= TimeTilNextShot)
             {
                 currentTime = 0;
+                print(hit.transform.name);
                 hit.collider.GetComponent<IDamagable>()?.TakeDamage(5f);
                 audioSource.clip = audioClip;
                 audioSource.Play();
@@ -224,5 +228,12 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
     public void TakeDamage(float damage)
     {
         health -= damage;
+    }
+
+    void OnDestroy()
+    {
+
+        PlayerRefernceItems.current.AINoiseAlertSubs.Remove(gameObject);
+
     }
 }
