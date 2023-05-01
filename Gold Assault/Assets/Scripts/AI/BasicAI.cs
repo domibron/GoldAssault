@@ -158,6 +158,8 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
     {
         Vector3 dir = playerTarg.position - transform.position;
 
+
+
         RaycastHit hit;
         if (Physics.Raycast(transform.position, dir, out hit))
         {
@@ -200,9 +202,15 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 
     private void shoot()
     {
+        // some wiereererd stuf. https://forum.unity.com/threads/raycast-layermask-parameter.944194/#post-6161542.
+        int layer = 9;
+        layer = 1 << layer; // makes the layer 9 to be hit.
+        // layer = (1 << layer) | (1 << 1);
+        layer = ~layer; // inverts so that the body can be hit.
+
         // shoot at the player.
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, float.MaxValue))
+        if (Physics.Raycast(transform.position, transform.forward, out hit, float.MaxValue, layer))
         {
             if (currentTime >= TimeTilNextShot)
             {

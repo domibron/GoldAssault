@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 {
     private List<INoiseAlert> noiseAlertSub;
 
-    public float currentHealth = 100f;
+    public float currentHealth = 100f; // TODO make it into a sub script of the player and remove this
     public float maxHealth = 100f;
 
     private CharacterController CC;
@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private float currentTime = 0f;
 
-    public Image HurtImage;
+    public Image HurtImage; // TODO remove / obsolite
 
     // * for the inventory so this knows what is equiped.
     public GameObject[] L_inventory = new GameObject[5];
@@ -85,6 +85,8 @@ public class PlayerController : MonoBehaviour, IDamagable
         ans /= 2;
         //ans = 127.5f * ans;
         HurtImage.color = new Color(255, 0, 0, ans);
+
+        // ^^^^^^ move into function;
 
         // print(ans);
 
