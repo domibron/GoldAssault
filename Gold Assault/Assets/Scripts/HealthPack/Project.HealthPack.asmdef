@@ -2,7 +2,8 @@
     "name": "Project.HealthPack",
     "rootNamespace": "",
     "references": [
-        "GUID:70ca55167b570a24883880bb58d9f2a9"
+        "GUID:70ca55167b570a24883880bb58d9f2a9",
+        "GUID:e3f4be5a90fcab7479f46cf28c99222c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

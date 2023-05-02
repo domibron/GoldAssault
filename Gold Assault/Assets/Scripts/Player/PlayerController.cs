@@ -54,6 +54,10 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     public Image HurtImage; // TODO remove / obsolite
 
+    public GameObject LeanPoint;
+    public float leanAmount = 30f;
+    public float currentLean;
+
     // * for the inventory so this knows what is equiped.
     public GameObject[] L_inventory = new GameObject[5];
 
@@ -62,7 +66,9 @@ public class PlayerController : MonoBehaviour, IDamagable
     void Start()
     {
         CC = GetComponent<CharacterController>();
-        cam = transform.Find("Camera Holder").gameObject;
+        cam = transform.Find("Lean Point").Find("Camera Holder").gameObject;
+        print(cam.name);
+        LeanPoint = transform.Find("Lean Point").gameObject;
 
         Cursor.lockState = CursorLockMode.Locked;
 
@@ -75,20 +81,41 @@ public class PlayerController : MonoBehaviour, IDamagable
     // Update is called once per frame
     void Update()
     {
-        if (currentHealth <= 0)
-        {
-            SceneManager.LoadScene(SceneManager.GetSceneAt(0).buildIndex);
-        }
+        // if (currentHealth <= 0)
+        // {
+        //     SceneManager.LoadScene(SceneManager.GetSceneAt(0).buildIndex);
+        // }
 
-        float ans = currentHealth / maxHealth;
-        ans = 1 - ans;
-        ans /= 2;
-        //ans = 127.5f * ans;
-        HurtImage.color = new Color(255, 0, 0, ans);
+        // float ans = currentHealth / maxHealth;
+        // ans = 1 - ans;
+        // ans /= 2;
+        // //ans = 127.5f * ans;
+        // HurtImage.color = new Color(255, 0, 0, ans);
 
         // ^^^^^^ move into function;
 
         // print(ans);
+
+        // leaning
+
+        if (Input.GetKey(KeyCode.Q))
+        {
+            currentLean = leanAmount;
+        }
+        else if (Input.GetKey(KeyCode.E))
+        {
+            currentLean = -leanAmount;
+        }
+        else
+        {
+            currentLean = 0f;
+        }
+
+        LeanPoint.transform.localRotation = Quaternion.Euler(0, 0, currentLean);
+
+
+
+        // end of leaning
 
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");

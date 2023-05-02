@@ -21,9 +21,15 @@ public class HealthPack : MonoBehaviour
         print(other.tag);
         if (other.transform.tag == "Player")
         {
+            HealthSystem hs = other.GetComponent<HealthSystem>();
 
-            PlayerController pc = other.GetComponent<PlayerController>();
-            pc.currentHealth = pc.maxHealth;
+            for (int i = 0; i < hs.playerBody.Length; i++)
+            {
+                hs.playerBody[i] = 100f;
+            }
+
+            // remove this should never be recoverable.
+            hs.bloodLevel = 100f;
 
         }
     }
