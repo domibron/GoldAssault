@@ -35,6 +35,7 @@ public class HealthSystem : MonoBehaviour
     PlayerController pc;
 
     private bool bleeding = false;
+    private float bleedMultipliyer = 0f;
 
     void Awake()
     {
@@ -60,20 +61,20 @@ public class HealthSystem : MonoBehaviour
         if (playerBody[0] <= 0)
         {
             // player is dead
-            SceneManager.LoadScene(SceneManager.GetSceneAt(0).buildIndex);
+            GameManager.current.Reload();
 
         }
 
         if (playerBody[1] <= 0)
         {
             // player is dead
-            SceneManager.LoadScene(SceneManager.GetSceneAt(0).buildIndex);
+            GameManager.current.Reload();
         }
 
         if (bloodLevel <= 0)
         {
             // player is dead
-            SceneManager.LoadScene(SceneManager.GetSceneAt(0).buildIndex);
+            GameManager.current.Reload();
         }
 
         if (bleeding)
@@ -81,9 +82,11 @@ public class HealthSystem : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.F))
             {
                 bleeding = false;
+                bleedMultipliyer = 0f;
+
             }
 
-            bloodLevel -= Time.deltaTime * 4f;
+            bloodLevel -= Time.deltaTime * 3f * bleedMultipliyer;
 
 
             if (bloodLevel >= 66f)
@@ -117,7 +120,7 @@ public class HealthSystem : MonoBehaviour
 
         if (helmet > 0) // this is to show that the player has a helmet
         {
-            Text_head.text = $"<color=blue>{playerBody[0] + helmet}</color>";
+            Text_head.text = $"<color=blue>{helmet}</color>";
         }
         else if (playerBody[0] >= 66f)
         {
@@ -135,7 +138,7 @@ public class HealthSystem : MonoBehaviour
 
         if (bodyArmor > 0) // this is to show th at the player has body armor
         {
-            Text_body.text = $"<color=blue>{playerBody[1] + bodyArmor}</color>";
+            Text_body.text = $"<color=blue>{bodyArmor}</color>";
         }
         else if (playerBody[1] >= 66f)
         {
@@ -233,6 +236,8 @@ public class HealthSystem : MonoBehaviour
                 print("bleed");
 
                 bleeding = true;
+
+                bleedMultipliyer += 1;
             }
         }
 

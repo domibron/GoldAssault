@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     public ProgressBarManager ProgressBar;
     private bool isReloading = false;
 
+    public bool loading = false;
+
 
     private void Awake()
     {
@@ -34,10 +36,15 @@ public class GameManager : MonoBehaviour
     List<AsyncOperation> scenesLoading = new List<AsyncOperation>();
     public void Loadlobby()
     {
+        loading = true;
         LoadingScreen.gameObject.SetActive(true);
+        SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
 
         if (SceneManager.sceneCount > 1)
-            scenesLoading.Add(SceneManager.UnloadSceneAsync(1));
+        {
+            scenesLoading.Add(SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(1)));
+        }
+
         scenesLoading.Add(SceneManager.LoadSceneAsync(2, LoadSceneMode.Additive));
 
         StartCoroutine(GetSceneLoadProgress());
@@ -45,10 +52,14 @@ public class GameManager : MonoBehaviour
 
     public void LoadMainMenu()
     {
+        loading = true;
         LoadingScreen.gameObject.SetActive(true);
 
         if (SceneManager.sceneCount > 1)
+        {
             scenesLoading.Add(SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(1)));
+        }
+
         scenesLoading.Add(SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive));
 
         StartCoroutine(GetSceneLoadProgress());
@@ -56,10 +67,15 @@ public class GameManager : MonoBehaviour
 
     public void LoadMap(int indexNumber)
     {
+        loading = true;
         LoadingScreen.gameObject.SetActive(true);
+        SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
 
         if (SceneManager.sceneCount > 1)
-            scenesLoading.Add(SceneManager.UnloadSceneAsync(2));
+        {
+            scenesLoading.Add(SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(1)));
+        }
+
         scenesLoading.Add(SceneManager.LoadSceneAsync(indexNumber, LoadSceneMode.Additive));
 
         StartCoroutine(GetSceneLoadProgress());
@@ -67,7 +83,9 @@ public class GameManager : MonoBehaviour
 
     public void Reload()
     {
+        loading = true;
         if (isReloading) return;
+        SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
 
         LoadingScreen.gameObject.SetActive(true);
 
@@ -101,6 +119,16 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        loading = false;
         LoadingScreen.gameObject.SetActive(false);
+
+        if (SceneManager.sceneCount > 1)
+        {
+            SceneManager.SetActiveScene(SceneManager.GetSceneAt(1));
+        }
+        else
+        {
+            SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
+        }
     }
 }

@@ -58,6 +58,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float leanAmount = 30f;
     public float currentLean;
 
+    public Animator playerBodyAnimator;
+
     // * for the inventory so this knows what is equiped.
     public GameObject[] L_inventory = new GameObject[5];
 
@@ -213,6 +215,9 @@ public class PlayerController : MonoBehaviour, IDamagable
             else
                 Debug.LogError("character vars not set");
 
+
+            playerBodyAnimator.SetFloat("X", move.x);
+            playerBodyAnimator.SetFloat("Z", move.z);
 
             if (Input.GetKey(KeyCode.LeftControl)) // REPLACE WITH TIME OTHERWISE ISSUES WILL OCCUR - the lerps
                 transform.localScale = new Vector3(transform.localScale.x,
