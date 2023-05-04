@@ -8,20 +8,67 @@ using UnityEngine.SceneManagement;
 public class HealthSystem : MonoBehaviour
 {
     public TMP_Text Text_blood;
-    public TMP_Text Text_head;
-    public TMP_Text Text_body;
-    public TMP_Text Text_leftArm;
-    public TMP_Text Text_leftLeg;
-    public TMP_Text Text_rightArm;
-    public TMP_Text Text_rightLeg;
 
+    [Space]
+    public Image Image_head;
+    public Image Image_torso;
+    public Image Image_leftArm;
+    public Image Image_leftLeg;
+    public Image Image_rightArm;
+    public Image Image_rightLeg;
 
+    [Space]
+    public Image Image_helmet;
+    public Image Image_bodyarmor;
+
+    [Space]
+    public Sprite Sprite_torso_black;
+    public Sprite Sprite_torso_yellow;
+    public Sprite Sprite_torso_orange;
+    public Sprite Sprite_torso_red;
+
+    [Space]
+    public Sprite Sprite_head_black;
+    public Sprite Sprite_head_yellow;
+    public Sprite Sprite_head_orange;
+    public Sprite Sprite_head_red;
+
+    [Space]
+    public Sprite Sprite_leftArm_black;
+    public Sprite Sprite_leftArm_yellow;
+    public Sprite Sprite_leftArm_orange;
+    public Sprite Sprite_leftArm_red;
+
+    [Space]
+    public Sprite Sprite_leftLeg_black;
+    public Sprite Sprite_leftLeg_yellow;
+    public Sprite Sprite_leftLeg_orange;
+    public Sprite Sprite_leftLeg_red;
+
+    [Space]
+    public Sprite Sprite_rightArm_black;
+    public Sprite Sprite_rightArm_yellow;
+    public Sprite Sprite_rightArm_orange;
+    public Sprite Sprite_rightArm_red;
+
+    [Space]
+    public Sprite Sprite_rightLeg_black;
+    public Sprite Sprite_rightLeg_yellow;
+    public Sprite Sprite_rightLeg_orange;
+    public Sprite Sprite_rightLeg_red;
+
+    [Space]
     public float maxHealth = 100f;
 
     public float bloodLevel = 100f;
 
     public float helmet = 100f;
     public float bodyArmor = 100f;
+
+    private float stageOneHealth = 80f;
+    private float stageTwoHealth = 50f;
+    private float stageThreeHealth = 20f;
+
 
     [HideInInspector]
     public float[] playerBody = { 100f, 100f, 100f, 100f, 100f, 100f };
@@ -120,93 +167,131 @@ public class HealthSystem : MonoBehaviour
 
         if (helmet > 0) // this is to show that the player has a helmet
         {
-            Text_head.text = $"<color=blue>{helmet}</color>";
-        }
-        else if (playerBody[0] >= 66f)
-        {
-            Text_head.text = $"<color=green>{playerBody[0]}</color>";
-        }
-        else if (playerBody[0] >= 33f)
-        {
-            Text_head.text = $"<color=yellow>{playerBody[0]}</color>";
+            if (!Image_helmet.gameObject.activeSelf)
+                Image_helmet.gameObject.SetActive(true);
         }
         else
         {
-            Text_head.text = $"<color=red>{playerBody[0]}</color>";
+            if (Image_helmet.gameObject.activeSelf)
+                Image_helmet.gameObject.SetActive(false);
         }
 
-
-        if (bodyArmor > 0) // this is to show th at the player has body armor
+        if (bodyArmor > 0)
         {
-            Text_body.text = $"<color=blue>{bodyArmor}</color>";
-        }
-        else if (playerBody[1] >= 66f)
-        {
-            Text_body.text = $"<color=green>{playerBody[1]}</color>";
-        }
-        else if (playerBody[1] >= 33f)
-        {
-            Text_body.text = $"<color=yellow>{playerBody[1]}</color>";
+            if (!Image_bodyarmor.gameObject.activeSelf)
+                Image_bodyarmor.gameObject.SetActive(true);
         }
         else
         {
-            Text_body.text = $"<color=red>{playerBody[1]}</color>";
+            if (Image_bodyarmor.gameObject.activeSelf)
+                Image_bodyarmor.gameObject.SetActive(false);
         }
 
-
-        if (playerBody[2] >= 66f)
+        if (playerBody[0] >= stageOneHealth)
         {
-            Text_leftArm.text = $"<color=green>{playerBody[2]}</color>";
+            Image_head.sprite = Sprite_head_black;
         }
-        else if (playerBody[2] >= 33f)
+        else if (playerBody[0] >= stageTwoHealth)
         {
-            Text_leftArm.text = $"<color=yellow>{playerBody[2]}</color>";
+            Image_head.sprite = Sprite_head_yellow;
+        }
+        else if (playerBody[0] >= stageThreeHealth)
+        {
+            Image_head.sprite = Sprite_head_orange;
         }
         else
         {
-            Text_leftArm.text = $"<color=red>{playerBody[2]}</color>";
+            Image_head.sprite = Sprite_head_red;
         }
 
 
-        if (playerBody[3] >= 66f)
+        if (playerBody[1] >= stageOneHealth)
         {
-            Text_leftLeg.text = $"<color=green>{playerBody[3]}</color>";
+            Image_torso.sprite = Sprite_torso_black;
         }
-        else if (playerBody[3] >= 33f)
+        else if (playerBody[1] >= stageTwoHealth)
         {
-            Text_leftLeg.text = $"<color=yellow>{playerBody[3]}</color>";
+            Image_torso.sprite = Sprite_torso_yellow;
+        }
+        else if (playerBody[1] >= stageThreeHealth)
+        {
+            Image_torso.sprite = Sprite_torso_orange;
         }
         else
         {
-            Text_leftLeg.text = $"<color=red>{playerBody[3]}</color>";
+            Image_torso.sprite = Sprite_torso_red;
         }
 
 
-        if (playerBody[4] >= 66f)
+        if (playerBody[2] >= stageOneHealth)
         {
-            Text_rightArm.text = $"<color=green>{playerBody[4]}</color>";
+            Image_leftArm.sprite = Sprite_leftArm_black;
         }
-        else if (playerBody[4] >= 33f)
+        else if (playerBody[2] >= stageTwoHealth)
         {
-            Text_rightArm.text = $"<color=yellow>{playerBody[4]}</color>";
+            Image_leftArm.sprite = Sprite_leftArm_yellow;
+        }
+        else if (playerBody[2] >= stageThreeHealth)
+        {
+            Image_leftArm.sprite = Sprite_leftArm_orange;
         }
         else
         {
-            Text_rightArm.text = $"<color=red>{playerBody[4]}</color>";
+            Image_leftArm.sprite = Sprite_leftArm_red;
         }
 
 
-        if (playerBody[5] >= 66f)
+        if (playerBody[3] >= stageOneHealth)
         {
-            Text_rightLeg.text = $"<color=green>{playerBody[5]}</color>";
+            Image_leftLeg.sprite = Sprite_leftLeg_black;
         }
-        else if (playerBody[4] >= 33f)
+        else if (playerBody[3] >= stageTwoHealth)
         {
-            Text_rightLeg.text = $"<color=yellow>{playerBody[5]}</color>";
+            Image_leftLeg.sprite = Sprite_leftLeg_yellow;
+        }
+        else if (playerBody[3] >= stageThreeHealth)
+        {
+            Image_leftLeg.sprite = Sprite_leftLeg_orange;
         }
         else
         {
-            Text_rightLeg.text = $"<color=red>{playerBody[5]}</color>";
+            Image_leftLeg.sprite = Sprite_leftLeg_red;
+        }
+
+
+        if (playerBody[4] >= stageOneHealth)
+        {
+            Image_rightArm.sprite = Sprite_rightArm_black;
+        }
+        else if (playerBody[4] >= stageTwoHealth)
+        {
+            Image_rightArm.sprite = Sprite_rightArm_yellow;
+        }
+        else if (playerBody[4] >= stageThreeHealth)
+        {
+            Image_rightArm.sprite = Sprite_rightArm_orange;
+        }
+        else
+        {
+            Image_rightArm.sprite = Sprite_rightArm_red;
+        }
+
+
+        if (playerBody[5] >= stageOneHealth)
+        {
+            Image_rightLeg.sprite = Sprite_rightLeg_black;
+        }
+        else if (playerBody[4] >= stageTwoHealth)
+        {
+            Image_rightLeg.sprite = Sprite_rightLeg_yellow;
+        }
+        else if (playerBody[4] >= stageThreeHealth)
+        {
+            Image_rightLeg.sprite = Sprite_rightLeg_orange;
+        }
+        else
+        {
+            Image_rightLeg.sprite = Sprite_rightLeg_red;
         }
 
 
