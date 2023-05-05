@@ -69,11 +69,15 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
             audioSource.clip = audioClip;
             audioSource.Play(); // get the audio source in code.
 
+            int layer = 9;
+            layer = 1 << layer; // makes the layer 9 to be hit.
+                                // layer = (1 << layer) | (1 << 1);
+            layer = ~layer; // inverts so that the body can be hit.
 
             // shoot
             Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, float.MaxValue))
+            if (Physics.Raycast(ray, out hit, float.MaxValue, layer))
             {
                 hit.collider.gameObject.GetComponent<IDamagable>()?.TakeDamage(((GunInfo)itemInfo).damage);
             }

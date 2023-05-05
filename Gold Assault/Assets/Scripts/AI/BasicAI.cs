@@ -205,7 +205,7 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
         // some wiereererd stuf. https://forum.unity.com/threads/raycast-layermask-parameter.944194/#post-6161542.
         int layer = 9;
         layer = 1 << layer; // makes the layer 9 to be hit.
-        // layer = (1 << layer) | (1 << 1);
+                            // layer = (1 << layer) | (1 << 1);
         layer = ~layer; // inverts so that the body can be hit.
 
         // shoot at the player.
