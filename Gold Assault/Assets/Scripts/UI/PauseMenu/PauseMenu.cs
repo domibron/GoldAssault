@@ -4,14 +4,17 @@ using UnityEngine;
 
 public class PauseMenu : MonoBehaviour
 {
-    public GameObject pauseMenu;
+    public GameObject PauseMenuUI;
+    public GameObject Pausemenu;
+    public GameObject SettingMenu;
 
     private bool isPaused = false;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        Pausemenu.SetActive(true);
+        SettingMenu.SetActive(false);
     }
 
     // Update is called once per frame
@@ -25,14 +28,44 @@ public class PauseMenu : MonoBehaviour
         if (isPaused)
         {
             Time.timeScale = 0;
-            pauseMenu.SetActive(true);
+
+            if (!PauseMenuUI.activeSelf)
+            {
+                PauseMenuUI.SetActive(true);
+            }
         }
         else
         {
             Time.timeScale = 1;
-            pauseMenu.SetActive(false);
+
+            if (PauseMenuUI.activeSelf)
+            {
+                PauseMenuUI.SetActive(false);
+            }
+
+            if (SettingMenu.activeSelf)
+            {
+                SettingMenu.SetActive(false);
+            }
+
+            if (!Pausemenu.activeSelf)
+            {
+                Pausemenu.SetActive(true);
+            }
         }
 
+    }
+
+    public void GoBack()
+    {
+        SettingMenu.SetActive(false);
+        Pausemenu.SetActive(true);
+    }
+
+    public void OpenSettings()
+    {
+        SettingMenu.SetActive(true);
+        Pausemenu.SetActive(false);
     }
 
     public void ReturnToLobby()
