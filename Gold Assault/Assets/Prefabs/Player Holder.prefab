@@ -2958,7 +2958,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce4dbfd99efe5a34e875f496f2f5f07c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pauseMenu: {fileID: 4815949061441550218}
+  PauseMenuUI: {fileID: 4815949061441550218}
+  Pausemenu: {fileID: 3874554684862270166}
+  SettingMenu: {fileID: 5987227915579512549}
 --- !u!114 &8746630379498306232
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2971,7 +2973,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0f90318f3f4f4e48b88b8d8f570eaa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displayUIText: {fileID: 0}
+  displayUIText: {fileID: 1614203130704051729}
 --- !u!1 &4303178289375955808
 GameObject:
   m_ObjectHideFlags: 0

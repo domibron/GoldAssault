@@ -176,6 +176,8 @@ public class LobbyManager : MonoBehaviour
     public void EquipItem()
     {
         tempInventory[selectedItemSlotType - 1] = selectedItemID;
+        SaveData.current.inventory = tempInventory;
+        SaveManager.current.ForceSave();
     }
 
     public void EquipAllItems()

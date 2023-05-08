@@ -77,7 +77,7 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
             // shoot
             Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, float.MaxValue, layer))
+            if (Physics.Raycast(ray, out hit, float.MaxValue, layer) && hit.transform.tag != "Player")
             {
                 hit.collider.gameObject.GetComponent<IDamagable>()?.TakeDamage(((GunInfo)itemInfo).damage);
             }

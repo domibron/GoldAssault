@@ -20,16 +20,18 @@ public class InventoryManager : MonoBehaviour
         // * singletons
         // _Master = get the thingy that allows to only have one 
 
-        try
-        {
+        SaveManager.current.onSave += OnSaveGame;
+
+        // try
+        // {
 
 
-        }
-        catch
-        {
+        // }
+        // catch
+        // {
 
 
-        }
+        // }
 
 
         try // this is to stop the game from crashing / complaining if the Master was not loaded. it will still load base weapons.
@@ -85,6 +87,35 @@ public class InventoryManager : MonoBehaviour
             EquipItem(4);
         }
 
+    }
+
+    private void OnSaveGame()
+    {
+        foreach (GameObject go in inventory)
+        {
+            Destroy(go);
+        }
+
+        try // this is to stop the game from crashing / complaining if the Master was not loaded. it will still load base weapons.
+        {
+            if (!overrideInventory) // get rid of the if statement on release, because people attually want to use their weapons. might no, as its usful.
+            {
+                SetUpInventory(SaveData.current.inventory);
+
+            }
+            else if (overrideInventory)
+            {
+                SetUpInventory(overrideInventoryIndex);
+
+            }
+        }
+        catch (NullReferenceException)
+        {
+            print("Failed to load");
+            // CreateItem(1, 0);
+            int[] zero = { 0, 0, 0, 0, 0 };
+            SetUpInventory(zero);
+        }
     }
 
     private void EquipItem(int i)
