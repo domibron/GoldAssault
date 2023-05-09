@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PauseMenu : MonoBehaviour
 {
+    public bool OveridingEscape = false;
+
     public GameObject PauseMenuUI;
     public GameObject Pausemenu;
     public GameObject SettingMenu;
@@ -20,9 +22,14 @@ public class PauseMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && !OveridingEscape)
         {
             isPaused = !isPaused;
+        }
+
+        if (OveridingEscape)
+        {
+            isPaused = false;
         }
 
         if (isPaused)
@@ -56,6 +63,8 @@ public class PauseMenu : MonoBehaviour
 
     }
 
+
+
     public void GoBack()
     {
         SettingMenu.SetActive(false);
@@ -66,6 +75,11 @@ public class PauseMenu : MonoBehaviour
     {
         SettingMenu.SetActive(true);
         Pausemenu.SetActive(false);
+    }
+
+    public void ResumeGame()
+    {
+        isPaused = false;
     }
 
     public void ReturnToLobby()

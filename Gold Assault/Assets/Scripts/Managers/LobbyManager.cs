@@ -26,10 +26,17 @@ public class LobbyManager : MonoBehaviour
     private int selectedItemSlotType = 0;
     private int selectedItemID = 0;
 
+    private bool LevelSelectorIsOpen = false;
+    private bool LoadoutIsOpen = false;
+
+    private PauseMenu pm;
+
     // things for the item information.
     public TMP_Text ItemName;
     public Image ItemImage;
     public TMP_Text ItemDescription;
+
+    // things for the map description.
 
     // Start is called before the first frame update
     void Start()
@@ -39,7 +46,7 @@ public class LobbyManager : MonoBehaviour
         ItemInformationSection.SetActive(false);
         EquipButton.SetActive(false);
 
-        closeWeaponSections();
+        CloseWeaponSections();
 
         if (MasterManger.current == null)
         {
@@ -61,6 +68,16 @@ public class LobbyManager : MonoBehaviour
 
         LoadInventory();
 
+        GameObject[] temp_gameObjectArray = GameObject.FindGameObjectsWithTag("Player");
+
+        foreach (GameObject go in temp_gameObjectArray)
+        {
+            if (go.name == "Player")
+            {
+                pm = go.GetComponent<PauseMenu>();
+            }
+        }
+
     }
 
     private void OnSaveGame()
@@ -71,7 +88,26 @@ public class LobbyManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (LevelSelectorIsOpen || LoadoutIsOpen)
+        {
+            pm.OveridingEscape = true;
 
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (LevelSelectorIsOpen)
+                {
+                    CloseMap();
+                }
+                if (LevelSelectorIsOpen)
+                {
+                    CloseLoadout();
+                }
+            }
+        }
+        else
+        {
+            pm.OveridingEscape = false;
+        }
     }
 
     public void OpenMap()
@@ -79,6 +115,7 @@ public class LobbyManager : MonoBehaviour
         LevelSelectorUI.SetActive(true);
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
+        LevelSelectorIsOpen = true;
     }
 
     public void CloseMap()
@@ -86,6 +123,17 @@ public class LobbyManager : MonoBehaviour
         LevelSelectorUI.SetActive(false);
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        LevelSelectorIsOpen = false;
+    }
+
+    public void OpenMapDescription()
+    {
+
+    }
+
+    public void CloseMapDescription()
+    {
+
     }
 
     public void OpenLoadout()
@@ -93,6 +141,7 @@ public class LobbyManager : MonoBehaviour
         LoadoutUI.SetActive(true);
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
+        LoadoutIsOpen = true;
     }
 
     public void CloseLoadout()
@@ -100,9 +149,10 @@ public class LobbyManager : MonoBehaviour
         LoadoutUI.SetActive(false);
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        LoadoutIsOpen = false;
     }
 
-    public void openWeaponSections(int _i)
+    public void OpenWeaponSections(int _i)
     {
         for (int i = 0; i < WeaponSections.Length; i++)
         {
@@ -118,7 +168,7 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    public void openLastWeaponSection(int _i)
+    public void OpenLastWeaponSection(int _i)
     {
         for (int i = 0; i < WeaponSections.Length; i++)
         {
@@ -134,7 +184,7 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    public void closeWeaponSections()
+    public void CloseWeaponSections()
     {
         for (int i = 0; i < WeaponSections.Length; i++)
         {
