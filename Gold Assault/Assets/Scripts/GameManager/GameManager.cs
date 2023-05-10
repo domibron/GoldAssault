@@ -81,6 +81,22 @@ public class GameManager : MonoBehaviour
         StartCoroutine(GetSceneLoadProgress());
     }
 
+    public void LoadMapWithName(string mapName)
+    {
+        loading = true;
+        LoadingScreen.gameObject.SetActive(true);
+        SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
+
+        if (SceneManager.sceneCount > 1)
+        {
+            scenesLoading.Add(SceneManager.UnloadSceneAsync(SceneManager.GetSceneAt(1)));
+        }
+
+        scenesLoading.Add(SceneManager.LoadSceneAsync(mapName, LoadSceneMode.Additive));
+
+        StartCoroutine(GetSceneLoadProgress());
+    }
+
     public void Reload()
     {
         loading = true;

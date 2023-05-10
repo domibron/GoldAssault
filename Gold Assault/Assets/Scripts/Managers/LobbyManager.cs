@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 
 public class LobbyManager : MonoBehaviour
 {
+    private PauseMenu pm;
+
     public GameObject LevelSelectorUI;
     public GameObject LoadoutUI;
 
@@ -21,6 +23,7 @@ public class LobbyManager : MonoBehaviour
 
     public ItemInformationForLoadout[] itemInformations = new ItemInformationForLoadout[5];
 
+    // loadout
     private int[] tempInventory = new int[5];
 
     private int selectedItemSlotType = 0;
@@ -29,14 +32,23 @@ public class LobbyManager : MonoBehaviour
     private bool LevelSelectorIsOpen = false;
     private bool LoadoutIsOpen = false;
 
-    private PauseMenu pm;
+
+    //map information
+    public GameObject mapDescriptionObject;
+
+    public TMP_Text MapName;
+    public Image MapImage;
+    public TMP_Text MapDescription;
+
+    private string mapBuildName;
+    private int mapIndexNumber;
+
 
     // things for the item information.
     public TMP_Text ItemName;
     public Image ItemImage;
     public TMP_Text ItemDescription;
 
-    // things for the map description.
 
     // Start is called before the first frame update
     void Start()
@@ -45,6 +57,7 @@ public class LobbyManager : MonoBehaviour
         LoadoutUI.SetActive(false);
         ItemInformationSection.SetActive(false);
         EquipButton.SetActive(false);
+        mapDescriptionObject.SetActive(false);
 
         CloseWeaponSections();
 
@@ -98,7 +111,8 @@ public class LobbyManager : MonoBehaviour
                 {
                     CloseMap();
                 }
-                if (LevelSelectorIsOpen)
+
+                if (LoadoutIsOpen)
                 {
                     CloseLoadout();
                 }
@@ -116,6 +130,7 @@ public class LobbyManager : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
         LevelSelectorIsOpen = true;
+        mapDescriptionObject.SetActive(false);
     }
 
     public void CloseMap()
@@ -126,14 +141,29 @@ public class LobbyManager : MonoBehaviour
         LevelSelectorIsOpen = false;
     }
 
-    public void OpenMapDescription()
+    public void OpenMapDescription(MapInformation mapInformation)
     {
+        MapName.text = mapInformation.nameOfMap;
+        MapImage.sprite = mapInformation.image;
+        MapDescription.text = mapInformation.description;
 
+        mapBuildName = mapInformation.mapBuildName;
+        mapIndexNumber = mapInformation.mapIndexNumber;
+
+        mapDescriptionObject.SetActive(true);
     }
 
     public void CloseMapDescription()
     {
+        mapDescriptionObject.SetActive(false);
 
+    }
+
+    public void LoadSelectedLevel()
+    {
+
+        Debug.LogErrorFormat("Something went worng! name of map {0}, map index {1} and gotten index {2} ", mapBuildName, mapIndexNumber, SceneManager.GetSceneByName(mapBuildName).buildIndex);
+        LoadMapName(mapBuildName);
     }
 
     public void OpenLoadout()
@@ -228,6 +258,7 @@ public class LobbyManager : MonoBehaviour
         tempInventory[selectedItemSlotType - 1] = selectedItemID;
         SaveData.current.inventory = tempInventory;
         SaveManager.current.ForceSave();
+        ItemInformationSection.SetActive(false);
     }
 
     public void EquipAllItems()
@@ -290,11 +321,19 @@ public class LobbyManager : MonoBehaviour
         itemInformations[slot] = IIFL;
     }
 
-    public void LoadMap(int id)
+    private void LoadMap(int id)
     {
         if (GameManager.current != null)
             GameManager.current.LoadMap(id);
         else
             SceneManager.LoadSceneAsync(id, LoadSceneMode.Single);
+    }
+
+    private void LoadMapName(string name)
+    {
+        if (GameManager.current != null)
+            GameManager.current.LoadMapWithName(name);
+        else
+            SceneManager.LoadSceneAsync(name, LoadSceneMode.Single);
     }
 }

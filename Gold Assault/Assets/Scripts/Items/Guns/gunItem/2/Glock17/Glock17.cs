@@ -31,7 +31,9 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
     // Update is called once per frame
     void Update()
     {
-        if (localTime > 0) localTime -= Time.deltaTime;
+        if (Time.timeScale == 0) return;
+
+        if (localTime > 0) localTime -= Time.unscaledDeltaTime;
         else localTime = 0;
 
         if (gameObject.activeSelf && !equipped)

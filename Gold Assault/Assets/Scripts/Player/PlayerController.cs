@@ -6,12 +6,9 @@ using UnityEngine.UI;
 using System.Linq;
 using UnityEngine.SceneManagement;
 
-public class PlayerController : MonoBehaviour, IDamagable
+public class PlayerController : MonoBehaviour
 {
     private List<INoiseAlert> noiseAlertSub;
-
-    public float currentHealth = 100f; // TODO make it into a sub script of the player and remove this
-    public float maxHealth = 100f;
 
     private CharacterController CC;
 
@@ -78,6 +75,15 @@ public class PlayerController : MonoBehaviour, IDamagable
 
         // noiseAlertSub = new List<INoiseAlert>(FindObjectsOfType<Object>().OfType<INoiseAlert>());
         PlayerRefernceItems.current.AINoiseAlertSubs = new List<GameObject>(GameObject.FindGameObjectsWithTag("AI"));
+
+        sensitivity = SaveData.current.sensitivity;
+
+        SaveManager.current.onSave += OnGameSave;
+    }
+
+    private void OnGameSave()
+    {
+        sensitivity = SaveData.current.sensitivity;
     }
 
     // Update is called once per frame
@@ -336,11 +342,12 @@ public class PlayerController : MonoBehaviour, IDamagable
 
 
 
-
         //Camera
         float mouseX = Input.GetAxisRaw("Mouse X") * sensitivity;
         float mouseY = Input.GetAxisRaw("Mouse Y") * sensitivity;
 
+        //if (Time.timeScale == 1)
+        // {
         if (!isRappelling) // put in the uper if statement
         {
             yRotation -= mouseY;
@@ -352,8 +359,6 @@ public class PlayerController : MonoBehaviour, IDamagable
         }
         else if (isRappelling)
         {
-
-
             yRotation -= mouseY;
             yRotation = Mathf.Clamp(yRotation, -90f, 90f);
 
@@ -362,9 +367,8 @@ public class PlayerController : MonoBehaviour, IDamagable
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
             cam.transform.localRotation = Quaternion.Euler(yRotation, xRotation, 0);
-
-
         }
+        // }
 
         // ground check
         isGrounded = CC.isGrounded;
@@ -471,11 +475,6 @@ public class PlayerController : MonoBehaviour, IDamagable
         {
             go.GetComponent<INoiseAlert>().NoiseMade(transform.position);
         }
-    }
-
-    public void TakeDamage(float damage)
-    {
-        currentHealth -= damage;
     }
 
 

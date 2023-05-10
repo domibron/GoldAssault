@@ -15,8 +15,9 @@ public class OverideSaveDataButtons : Editor
         DrawDefaultInspector();
 
         OverideSaveData myScript = (OverideSaveData)target;
-        if (GUILayout.Button("Force Save"))
-            myScript.saveArrayToInventory();
+        if (GUILayout.Button("Force inventory")) myScript.saveArrayToInventory();
+
+        if (GUILayout.Button("Force sensitivty")) myScript.saveNewSens();
     }
 }
 // ! ===============================
@@ -26,9 +27,13 @@ public class OverideSaveData : MonoBehaviour
 {
     [SerializeField] public int[] _temp = new int[5];
 
+    [SerializeField] public float sensitivity = 1f;
+
     void Start()
     {
         _temp = SaveData.current.inventory;
+
+        sensitivity = SaveData.current.sensitivity;
 
         SaveManager.current.onSave += OnSaveGame;
     }
@@ -38,6 +43,16 @@ public class OverideSaveData : MonoBehaviour
         print("loaded save inv");
 
         _temp = SaveData.current.inventory;
+
+        sensitivity = SaveData.current.sensitivity;
+
+    }
+
+    public void saveNewSens()
+    {
+        SaveData.current.sensitivity = sensitivity;
+        SerializationManager.Save("0", SaveData.current);
+        SaveManager.current.GameSaveInvoke();
     }
 
     public void saveArrayToInventory()

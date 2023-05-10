@@ -12,6 +12,8 @@ public class PauseMenu : MonoBehaviour
 
     private bool isPaused = false;
 
+    private bool runOnce = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,6 +38,11 @@ public class PauseMenu : MonoBehaviour
         {
             Time.timeScale = 0;
 
+            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.visible = true;
+
+            runOnce = false;
+
             if (!PauseMenuUI.activeSelf)
             {
                 PauseMenuUI.SetActive(true);
@@ -44,6 +51,12 @@ public class PauseMenu : MonoBehaviour
         else
         {
             Time.timeScale = 1;
+
+            if (!runOnce)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
 
             if (PauseMenuUI.activeSelf)
             {
@@ -63,7 +76,10 @@ public class PauseMenu : MonoBehaviour
 
     }
 
+    public void SaveSettings()
+    {
 
+    }
 
     public void GoBack()
     {
