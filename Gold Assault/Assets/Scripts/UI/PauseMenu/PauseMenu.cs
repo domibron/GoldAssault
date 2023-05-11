@@ -6,6 +6,8 @@ public class PauseMenu : MonoBehaviour
 {
     public bool OveridingEscape = false;
 
+    public bool OveridingTimeScale = false;
+
     public GameObject PauseMenuUI;
     public GameObject Pausemenu;
     public GameObject SettingMenu;
@@ -34,7 +36,8 @@ public class PauseMenu : MonoBehaviour
             isPaused = false;
         }
 
-        if (isPaused)
+
+        if (isPaused && !OveridingTimeScale)
         {
             Time.timeScale = 0;
 
@@ -48,7 +51,7 @@ public class PauseMenu : MonoBehaviour
                 PauseMenuUI.SetActive(true);
             }
         }
-        else
+        else if (!OveridingTimeScale)
         {
             Time.timeScale = 1;
 

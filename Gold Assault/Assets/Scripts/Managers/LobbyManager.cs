@@ -105,6 +105,13 @@ public class LobbyManager : MonoBehaviour
         {
             pm.OveridingEscape = true;
 
+            pm.OveridingTimeScale = true;
+
+            Time.timeScale = 0f;
+
+            print(Time.timeScale);
+
+
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 if (LevelSelectorIsOpen)
@@ -120,7 +127,9 @@ public class LobbyManager : MonoBehaviour
         }
         else
         {
+            // this may cause errors - making a future not about it.|A
             pm.OveridingEscape = false;
+            pm.OveridingTimeScale = false;
         }
     }
 
