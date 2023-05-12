@@ -44,8 +44,12 @@ public class PlayerController : MonoBehaviour
     private bool waiting = false;
 
 
-    [SerializeField] private GameObject rappelInteraction;
-    [SerializeField] private Image rappelImage;
+    // [SerializeField] private GameObject rappelInteraction;
+    // [SerializeField] private Image rappelImage;
+
+    private PlayerInteractionText playerInteractionText;
+
+    private DisplayText rappelDisplayText;
 
     private float currentTime = 0f;
 
@@ -71,7 +75,13 @@ public class PlayerController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
 
-        rappelInteraction.SetActive(false);
+        // rappelInteraction.SetActive(false);
+        playerInteractionText = GetComponent<PlayerInteractionText>();
+
+        rappelDisplayText = new DisplayText();
+
+        rappelDisplayText.text = "Hold <color=blue>F</color> to <color=blue>Rappel</color>";
+        rappelDisplayText.priority = 2;
 
         // noiseAlertSub = new List<INoiseAlert>(FindObjectsOfType<Object>().OfType<INoiseAlert>());
         PlayerRefernceItems.current.AINoiseAlertSubs = new List<GameObject>(GameObject.FindGameObjectsWithTag("AI"));
@@ -138,8 +148,17 @@ public class PlayerController : MonoBehaviour
 
         if (canRappel && !isRappelling)
         {
-            rappelInteraction.SetActive(true);
-            rappelImage.fillAmount = currentTime;
+            // rappelInteraction.SetActive(true);
+
+
+
+            // rappelImage.fillAmount = currentTime;
+            //do something to indicate to player.
+            if (!playerInteractionText.IsInTheList(rappelDisplayText))
+            {
+                playerInteractionText.AddInteractionText(rappelDisplayText);
+            }
+
             if (Input.GetKey(KeyCode.F))
             {
                 //print(currentTime);
@@ -193,7 +212,12 @@ public class PlayerController : MonoBehaviour
         }
         else if (!canRappel && !isRappelling)
         {
-            rappelInteraction.SetActive(false);
+            // rappelInteraction.SetActive(false);
+            if (playerInteractionText.IsInTheList(rappelDisplayText))
+            {
+                playerInteractionText.RemoveInteractionText(rappelDisplayText);
+            }
+
         }
 
 
@@ -277,7 +301,9 @@ public class PlayerController : MonoBehaviour
             }
 
             if (atWindow)
+            {
                 print("SAPCE!!!");
+            }
 
             if (atWindow && Input.GetKeyDown(KeyCode.Space))
             {
@@ -293,8 +319,13 @@ public class PlayerController : MonoBehaviour
 
             velocity.y = 0f;
 
+            if (!playerInteractionText.IsInTheList(rappelDisplayText))
+            {
+                rappelDisplayText.text = "Hold <color=blue>F</color> to <color=blue>Stop rappelling</color>";
+                playerInteractionText.AddInteractionText(rappelDisplayText);
+            }
 
-            rappelImage.fillAmount = currentTime;
+            // rappelImage.fillAmount = currentTime;
             if (Input.GetKey(KeyCode.F))
             {
                 //print(currentTime);
@@ -346,29 +377,29 @@ public class PlayerController : MonoBehaviour
         float mouseX = Input.GetAxisRaw("Mouse X") * sensitivity;
         float mouseY = Input.GetAxisRaw("Mouse Y") * sensitivity;
 
-        //if (Time.timeScale == 1)
-        // {
-        if (!isRappelling) // put in the uper if statement
+        if (Time.timeScale == 1)
         {
-            yRotation -= mouseY;
-            yRotation = Mathf.Clamp(yRotation, -90f, 90f);
+            if (!isRappelling) // put in the uper if statement
+            {
+                yRotation -= mouseY;
+                yRotation = Mathf.Clamp(yRotation, -90f, 90f);
 
 
-            transform.Rotate(Vector3.up * mouseX);
-            cam.transform.localRotation = Quaternion.Euler(yRotation, 0, 0);
+                transform.Rotate(Vector3.up * mouseX);
+                cam.transform.localRotation = Quaternion.Euler(yRotation, 0, 0);
+            }
+            else if (isRappelling)
+            {
+                yRotation -= mouseY;
+                yRotation = Mathf.Clamp(yRotation, -90f, 90f);
+
+
+                xRotation += mouseX;
+                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+                cam.transform.localRotation = Quaternion.Euler(yRotation, xRotation, 0);
+            }
         }
-        else if (isRappelling)
-        {
-            yRotation -= mouseY;
-            yRotation = Mathf.Clamp(yRotation, -90f, 90f);
-
-
-            xRotation += mouseX;
-            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-
-            cam.transform.localRotation = Quaternion.Euler(yRotation, xRotation, 0);
-        }
-        // }
 
         // ground check
         isGrounded = CC.isGrounded;

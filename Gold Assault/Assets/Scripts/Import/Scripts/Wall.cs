@@ -31,6 +31,8 @@ public class Wall : MonoBehaviour
 
     private void OnEnable()
     {
+        //GameManager.current.overideAll = true;
+
         Vector3 halfSize = size / 2f;
 
         meshFilter = GetComponent<MeshFilter>();
@@ -52,6 +54,8 @@ public class Wall : MonoBehaviour
         subjects.AddPolygon(contourn);
 
         ScheduleJobs();
+
+        // GameManager.current.overideAll = false;
     }
 
     private void LateUpdate()
@@ -64,7 +68,9 @@ public class Wall : MonoBehaviour
 
     private void OnDisable()
     {
-        //avoid memory leaks
+        //GameManager.current.overideAll = true;
+
+        //avoid memory leaks - yes, I agree
         if (jobClips.IsCreated)
         {
             jobClips.Dispose();
@@ -85,6 +91,8 @@ public class Wall : MonoBehaviour
         {
             subjects.Dispose();
         }
+
+        // GameManager.current.overideAll = false;
     }
 
     public void AddBulletHole(Ray rayOnWall, float destructionLvWithDropoff)
@@ -174,16 +182,6 @@ public class Wall : MonoBehaviour
         }
         lastJobHandle.Complete();
 
-        string x;
-        x = "list: ";
-
-        foreach (int i in OutTriangles)
-        {
-            x += i + " ";
-        }
-
-        print(x);
-
         meshFilter.sharedMesh.Clear();
         meshFilter.sharedMesh.vertices = OutVertices.ToArray();
         meshFilter.sharedMesh.triangles = OutTriangles.ToArray();
@@ -215,7 +213,7 @@ public class Wall : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.yellow;
+        Gizmos.color = Color.grey;
         Matrix4x4 rotationMatrix = Matrix4x4.TRS(transform.position, transform.rotation, transform.lossyScale);
         Gizmos.matrix = rotationMatrix;
         Gizmos.DrawCube(new Vector3(0.0f, size.y / 2f, 0f), size);

@@ -77,11 +77,18 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
             layer = ~layer; // inverts so that the body can be hit.
 
             // shoot
-            Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
+            // Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
+            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, float.MaxValue, layer) && hit.transform.tag != "Player")
             {
                 hit.collider.gameObject.GetComponent<IDamagable>()?.TakeDamage(((GunInfo)itemInfo).damage);
+
+                if (hit.collider.gameObject.layer == 8)
+                {
+                    Wall wall = hit.collider.gameObject.GetComponent<Wall>();
+                    wall.AddBulletHole(ray, 0.1f);
+                }
             }
 
             foreach (GameObject go in PlayerRefernceItems.current.AINoiseAlertSubs)

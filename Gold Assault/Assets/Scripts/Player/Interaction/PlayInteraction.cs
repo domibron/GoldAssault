@@ -9,8 +9,6 @@ public class PlayInteraction : MonoBehaviour
     //! https://www.youtube.com/watch?v=_yf5vzZ2sYE&t=229s
     //! https://www.youtube.com/watch?v=cxJnvEpwQHc&t=674s
 
-    public TMP_Text UIText;
-
     private Transform _currentSelection;
 
     private ISelector _selector;
@@ -19,12 +17,23 @@ public class PlayInteraction : MonoBehaviour
 
     private ItemInteract _interaction;
 
+    private PlayerInteractionText playerInteractionText;
+
+    private DisplayText displayText;
+
     // Start is called before the first frame update
     void Awake()
     {
         _selector = GetComponent<ISelector>();
         _rayProvider = GetComponent<IRayProvider>();
         _slectionResponse = GetComponent<ISelectionResponse>();
+
+        playerInteractionText = GetComponent<PlayerInteractionText>();
+
+        displayText = new DisplayText();
+
+        displayText.text = "Press <color=blue>F</color> to <color=blue>interact</color>";
+        displayText.priority = 1;
     }
 
     // Update is called once per frame
@@ -45,8 +54,12 @@ public class PlayInteraction : MonoBehaviour
             {
                 _interaction = _currentSelection.GetComponent<ItemInteract>();
 
-                // show to key to do the action
-                UIText.text = "Press <color=red>F</color> to <color=red>interact</color>";
+                // this is to prevent multiple instance of the data, if there is more than one then it will stay on the screen forever.
+                if (!playerInteractionText.IsInTheList(displayText))
+                {
+                    playerInteractionText.AddInteractionText(displayText);
+                }
+
 
                 if (Input.GetKeyDown(KeyCode.F))
                 {
@@ -61,7 +74,7 @@ public class PlayInteraction : MonoBehaviour
 
             if (_currentSelection == null)
             {
-                UIText.text = "";
+                playerInteractionText.RemoveInteractionText(displayText);
             }
         }
         catch (NullReferenceException)

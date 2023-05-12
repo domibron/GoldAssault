@@ -15,9 +15,12 @@ public class GameManager : MonoBehaviour
 
     public bool loading = false;
 
+    public bool overideAll = false;
 
-    private void Awake()
+    private void Start()
     {
+        if (overideAll) return;
+
         current = this;
 
         LoadingScreen.SetActive(false);
@@ -30,12 +33,16 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (overideAll == true) return;
+
         isReloading = LoadingScreen.gameObject.activeSelf;
     }
 
     List<AsyncOperation> scenesLoading = new List<AsyncOperation>();
     public void Loadlobby()
     {
+        if (overideAll == true) return;
+
         loading = true;
         LoadingScreen.gameObject.SetActive(true);
         SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
@@ -52,6 +59,8 @@ public class GameManager : MonoBehaviour
 
     public void LoadMainMenu()
     {
+        if (overideAll == true) return;
+
         loading = true;
         LoadingScreen.gameObject.SetActive(true);
 
@@ -67,6 +76,8 @@ public class GameManager : MonoBehaviour
 
     public void LoadMap(int indexNumber)
     {
+        if (overideAll == true) return;
+
         loading = true;
         LoadingScreen.gameObject.SetActive(true);
         SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
@@ -83,6 +94,8 @@ public class GameManager : MonoBehaviour
 
     public void LoadMapWithName(string mapName)
     {
+        if (overideAll == true) return;
+
         loading = true;
         LoadingScreen.gameObject.SetActive(true);
         SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
@@ -99,6 +112,8 @@ public class GameManager : MonoBehaviour
 
     public void Reload()
     {
+        if (overideAll == true) return;
+
         loading = true;
         if (isReloading) return;
         SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));

@@ -109,9 +109,6 @@ public class LobbyManager : MonoBehaviour
 
             Time.timeScale = 0f;
 
-            print(Time.timeScale);
-
-
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 if (LevelSelectorIsOpen)
