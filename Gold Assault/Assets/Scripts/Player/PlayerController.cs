@@ -55,9 +55,18 @@ public class PlayerController : MonoBehaviour
 
     public Image HurtImage; // TODO remove / obsolite
 
+
+    //leaning stuff
     public GameObject LeanPoint;
     public float leanAmount = 30f;
     public float currentLean;
+    private float leanTime = 0f;
+    private float savedLeanStore = 0f;
+    private float otherLeanStore = 0f;
+    private float deviationCorrection = 0f;
+    private float reduction = 1f;
+    private bool leftLean = false;
+    private bool rightLean = false;
 
     public Animator playerBodyAnimator;
 
@@ -114,26 +123,84 @@ public class PlayerController : MonoBehaviour
 
         // print(ans);
 
-        // leaning
+        // =============================================================== leaning =====================================================================
+        // yes, we are in update.
+
+        // lerping. input a, input b and value between 0 and 1.
+        // if the value is closer to 0 then a is more so if a is 10 and b is 20 and value is 0.2 then it will give 12.
+
+        float _increaser = 3f;
+
+        if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))
+        {
+            // currentLean = 0f;
+            leanTime = 0f;
+
+            if ((currentLean > 0 && rightLean) || (currentLean < 0 && leftLean))
+            {
+                float _temp = Mathf.Abs(currentLean) / leanAmount; // gets the decimal percentage.
+                _temp = 1 - _temp; // invert decimal percentage. tip, -= is the same as var - value not value - var.
+                _temp += 0.5f; // add 0.5 for reduction.
+
+                reduction = _temp;
+            }
+
+
+
+            // savedLeanStore = 0f;
+        }
 
         if (Input.GetKey(KeyCode.Q))
         {
-            currentLean = leanAmount;
-        }
-        else if (Input.GetKey(KeyCode.E))
-        {
-            currentLean = -leanAmount;
+            leanTime += Time.deltaTime * _increaser * reduction;
+            currentLean = Mathf.Lerp(savedLeanStore, leanAmount, leanTime);
+
+            savedLeanStore = currentLean;
+            leftLean = true;
         }
         else
         {
+            leftLean = false;
+        }
+
+        if (Input.GetKey(KeyCode.E))
+        {
+            leanTime += Time.deltaTime * _increaser * reduction;
+            currentLean = Mathf.Lerp(savedLeanStore, -leanAmount, leanTime);
+
+            savedLeanStore = currentLean;
+            rightLean = true;
+        }
+        else
+        {
+            rightLean = false;
+        }
+
+        if (leanTime > 0 && !rightLean && !leftLean)
+        {
+            if (leanTime > 1) leanTime = 1f;
+            if (reduction != 1) reduction = 1f;
+
+            leanTime -= Time.deltaTime * _increaser * reduction * 2f;
+            currentLean = Mathf.Lerp(0, savedLeanStore, leanTime);
+
+
+            // otherLeanStore = currentLean;
+        }
+        else if (!rightLean && !leftLean)
+        {
             currentLean = 0f;
+            leanTime = 0f;
+            reduction = 1f;
+
+            savedLeanStore = 0f;
         }
 
         LeanPoint.transform.localRotation = Quaternion.Euler(0, 0, currentLean);
 
 
 
-        // end of leaning
+        // ========================================================== end of leaning ==============================================================
 
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
