@@ -33,7 +33,7 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
     [Space, Header("AI roming")] // space here so I can look at inspector better and understant what is for what.
 
     [SerializeField] private float wanderingTime = 3f;
-    [SerializeField] private float wanderRadius = 10f;
+    [SerializeField] private float wanderRadius = 3f;
 
 
     private Transform targetLocation;

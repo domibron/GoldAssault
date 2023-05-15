@@ -53,8 +53,6 @@ public class PlayerController : MonoBehaviour
 
     private float currentTime = 0f;
 
-    public Image HurtImage; // TODO remove / obsolite
-
 
     //leaning stuff
     public GameObject LeanPoint;

@@ -10,6 +10,10 @@ public class HealthSystem : MonoBehaviour
     public TMP_Text Text_blood;
 
     [Space]
+    public Image Image_Hit;
+    public Image Image_Bleed;
+
+    [Space]
     public Image Image_head;
     public Image Image_torso;
     public Image Image_leftArm;
@@ -81,8 +85,9 @@ public class HealthSystem : MonoBehaviour
 
     PlayerController pc;
 
-    private bool bleeding = false;
+    [SerializeField] private bool bleeding = false;
     private float bleedMultipliyer = 0f;
+    private float bleedTime = 0f;
 
     void Awake()
     {
@@ -94,6 +99,9 @@ public class HealthSystem : MonoBehaviour
         }
 
         pc = GetComponent<PlayerController>();
+
+        Image_Bleed.gameObject.SetActive(false);
+        Image_Hit.gameObject.SetActive(false);
     }
 
     // Start is called before the first frame update
@@ -124,8 +132,15 @@ public class HealthSystem : MonoBehaviour
             GameManager.current.Reload();
         }
 
+        if (!bleeding)
+        {
+            if (Image_Bleed.gameObject.activeSelf) Image_Bleed.gameObject.SetActive(false);
+            bleedTime = 0f;
+        }
+
         if (bleeding)
         {
+
             if (Input.GetKeyDown(KeyCode.F))
             {
                 bleeding = false;
@@ -134,6 +149,19 @@ public class HealthSystem : MonoBehaviour
             }
 
             bloodLevel -= Time.deltaTime * 3f * bleedMultipliyer;
+
+            // image pules
+            bleedTime += Time.deltaTime;
+
+            float _positiveSineWave = Mathf.Abs(Mathf.Sin(bleedTime));
+
+            float _alpha = 0.4f + (0.5f * _positiveSineWave);
+
+            Color _color = new Color(Image_Bleed.color.r, Image_Bleed.color.g, Image_Bleed.color.b, _alpha);
+
+            if (!Image_Bleed.gameObject.activeSelf) Image_Bleed.gameObject.SetActive(true);
+
+            Image_Bleed.color = _color;
 
 
             if (bloodLevel >= 66f)
@@ -311,6 +339,8 @@ public class HealthSystem : MonoBehaviour
         }
         else
         {
+            StartCoroutine(TookAHit());
+
             playerBody[bodyPart] -= damage;
             // roll to recive bleed damage.
 
@@ -318,13 +348,19 @@ public class HealthSystem : MonoBehaviour
             {
                 // bleed out;
 
-                print("bleed");
-
                 bleeding = true;
 
                 bleedMultipliyer += 1;
             }
         }
 
+    }
+
+    private IEnumerator TookAHit()
+    {
+        //Image_Hit.color = new Color(Image_Hit.color.r, Image_Hit.color.g, Image_Hit.color.b, 0.5f);
+        Image_Hit.gameObject.SetActive(true);
+        yield return new WaitForSeconds(0.2f);
+        Image_Hit.gameObject.SetActive(false);
     }
 }

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameOfMap: Embassy
   description: Hostiles are using force to get the attention of the officials. They
-    claim to be distributed by the goverment. The are extremly hostile and will require
-    extreme caution.
+    claim to be distributed by the government. They are extremely hostile and will
+    require extreme caution.
   image: {fileID: 21300000, guid: 8eaf8a6dcabc7e948bcb78774440ba52, type: 3}
   mapIndexNumber: 0
   mapBuildName: Embassy

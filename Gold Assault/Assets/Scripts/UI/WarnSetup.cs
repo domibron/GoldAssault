@@ -9,6 +9,6 @@ public class WarnSetup : MonoBehaviour
     void Awake()
     {
         GetComponent<TMP_Text>().text = $"<b>DO NOT DISTRIBUTE</b><br>Game Version: {Application.version}"
-        + "<br>This is a prototype build and is not ment for the public.<br>Everything is subject to change!";
+        + "<br>This is a prototype build and is not meant for the public.<br>Everything is subject to change!";
     }
 }
