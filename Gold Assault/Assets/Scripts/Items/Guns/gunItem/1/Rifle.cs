@@ -71,8 +71,8 @@ public class Rifle : Gun
             audioSource.Play(); // get the audio source in code.
 
             int layer = 9;
-            layer = 1 << layer; // makes the layer 9 to be hit.
-                                // layer = (1 << layer) | (1 << 1);
+            // layer = 1 << layer; // makes the layer 9 to be hit.
+            layer = (1 << layer) | (1 << 7);
             layer = ~layer; // inverts so that the body can be hit.
 
             // shoot

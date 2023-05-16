@@ -215,7 +215,7 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
             if (currentTime >= TimeTilNextShot)
             {
                 currentTime = 0;
-                print(hit.transform.name);
+                // print(hit.transform.name);
                 hit.collider.GetComponent<IDamagable>()?.TakeDamage(5f);
                 audioSource.clip = audioClip;
                 audioSource.Play();

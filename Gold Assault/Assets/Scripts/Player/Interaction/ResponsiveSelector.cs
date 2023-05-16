@@ -34,6 +34,8 @@ public class ResponsiveSelector : MonoBehaviour, ISelector
 
         for (int i = 0; i < selectables.Count; i++)
         {
+            if (selectables[i] == null) selectables.RemoveAt(i);
+
             var vector1 = ray.direction;
             var vector2 = selectables[i].transform.position - ray.origin;
 

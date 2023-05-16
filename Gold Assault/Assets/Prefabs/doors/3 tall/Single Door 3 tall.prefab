@@ -726,7 +726,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxRange: 4
-  child: {fileID: 0}
+  child: {fileID: 7056124369943660983}
 --- !u!1 &7056124369859905306
 GameObject:
   m_ObjectHideFlags: 0
@@ -773,7 +773,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxRange: 4
-  child: {fileID: 0}
+  child: {fileID: 7056124370674162159}
 --- !u!1 &7056124369943660983
 GameObject:
   m_ObjectHideFlags: 0
@@ -1035,7 +1035,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxRange: 4
-  child: {fileID: 0}
+  child: {fileID: 7056124370502695146}
 --- !u!1 &7056124370502695146
 GameObject:
   m_ObjectHideFlags: 0

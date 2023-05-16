@@ -17,6 +17,9 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
     public AudioClip audioClip;
     public AudioSource audioSource;
 
+    public int currrentAmmoMag = 0;
+    public List<int> ammoMags = new List<int>();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,6 +27,13 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
         cam = Camera.main;
 
         animator = GetComponent<Animator>();
+
+        for (int i = 0; i <= ((GunInfo)itemInfo).maxAmmoMags; i++)
+        {
+            ammoMags.Add(((GunInfo)itemInfo).maxAmmoInClip);
+        }
+
+
         equipped = false;
 
     }
@@ -61,9 +71,26 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
         }
     }
 
+    private void Reload()
+    {
+        if (ammoMags.Count > 0)
+        {
+            int _tempInt = currrentAmmoMag;
+
+            if (ammoMags[_tempInt] <= 0)
+            {
+                ammoMags.RemoveAt(_tempInt);
+            }
+
+            // if (currrentAmmoMag)
+
+            if (currrentAmmoMag == ammoMags.Count - 1) currrentAmmoMag = 0;
+        }
+    }
+
     private void shoot()
     {
-        if (localTime <= ((GunInfo)itemInfo).fireRate)
+        if (localTime <= ((GunInfo)itemInfo).fireRate && ammoMags[currrentAmmoMag] > 1)
         {
             localTime += ((GunInfo)itemInfo).fireRate;
             animator.SetTrigger("Fire");
@@ -71,9 +98,11 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
             audioSource.clip = audioClip;
             audioSource.Play(); // get the audio source in code.
 
+            ammoMags[currrentAmmoMag] -= 1;
+
             int layer = 9;
-            layer = 1 << layer; // makes the layer 9 to be hit.
-                                // layer = (1 << layer) | (1 << 1);
+            // layer = 1 << layer; // makes the layer 9 to be hit.
+            layer = (1 << layer) | (1 << 7);
             layer = ~layer; // inverts so that the body can be hit.
 
             // shoot

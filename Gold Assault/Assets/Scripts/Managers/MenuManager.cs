@@ -2,12 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
     private MasterManger MM;
 
     public GameObject[] menus;
+
+    public TMP_Dropdown dropdown;
 
     // Start is called before the first frame update
     void Start()
@@ -48,7 +52,7 @@ public class MenuManager : MonoBehaviour
         Application.Quit();
     }
 
-    private void LoadMenu(int menuNum) // cool menu loader. Users the 0 - max not 1 to max.
+    public void LoadMenu(int menuNum) // cool menu loader. Users the 0 - max not 1 to max.
     {
         for (int i = 0; i < menus.Length; i++)
         {
@@ -59,4 +63,28 @@ public class MenuManager : MonoBehaviour
                 menus[i].SetActive(false);
         }
     }
+
+    public void ChangeWindowMode()
+    {
+        if (dropdown.value == 0)
+        {
+            Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+        }
+        else if (dropdown.value == 1)
+        {
+            Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+
+        }
+        else if (dropdown.value == 2)
+        {
+            Screen.fullScreenMode = FullScreenMode.MaximizedWindow;
+
+        }
+        else if (dropdown.value == 3)
+        {
+            Screen.fullScreenMode = FullScreenMode.Windowed;
+
+        }
+    }
+
 }

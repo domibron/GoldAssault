@@ -89,6 +89,9 @@ public class HealthSystem : MonoBehaviour
     private float bleedMultipliyer = 0f;
     private float bleedTime = 0f;
 
+    private PlayerInteractionText playerInteraction;
+    private DisplayText displayText;
+
     void Awake()
     {
         // ? instance?
@@ -102,12 +105,16 @@ public class HealthSystem : MonoBehaviour
 
         Image_Bleed.gameObject.SetActive(false);
         Image_Hit.gameObject.SetActive(false);
+
+        displayText = new DisplayText();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-
+        playerInteraction = GetComponent<PlayerInteractionText>();
+        displayText.text = "Press <color=red>F</color> to <color=red>stop bleeding</color>";
+        displayText.priority = 10;
     }
 
     // Update is called once per frame
@@ -136,6 +143,11 @@ public class HealthSystem : MonoBehaviour
         {
             if (Image_Bleed.gameObject.activeSelf) Image_Bleed.gameObject.SetActive(false);
             bleedTime = 0f;
+
+            if (playerInteraction.IsInTheList(displayText))
+            {
+                playerInteraction.RemoveInteractionText(displayText);
+            }
         }
 
         if (bleeding)
@@ -163,32 +175,37 @@ public class HealthSystem : MonoBehaviour
 
             Image_Bleed.color = _color;
 
+            if (!playerInteraction.IsInTheList(displayText))
+            {
+                playerInteraction.AddInteractionText(displayText);
+            }
+
 
             if (bloodLevel >= 66f)
             {
-                Text_blood.text = $"<color=green>{bloodLevel.ToString("F0")}</color> - press F to stop bleeding";
+                Text_blood.text = $"blood level <color=green>{bloodLevel.ToString("F0")}</color>";
             }
             else if (bloodLevel >= 33f)
             {
-                Text_blood.text = $"<color=yellow>{bloodLevel.ToString("F0")}</color> - press F to stop bleeding";
+                Text_blood.text = $"blood level <color=yellow>{bloodLevel.ToString("F0")}</color>";
             }
             else
             {
-                Text_blood.text = $"<color=red>{bloodLevel.ToString("F0")}</color> - press F to stop bleeding";
+                Text_blood.text = $"blood level <color=red>{bloodLevel.ToString("F0")}</color>";
             }
 
         }
         else if (bloodLevel >= 66f)
         {
-            Text_blood.text = $"<color=green>{bloodLevel.ToString("F0")}</color>";
+            Text_blood.text = $"blood level <color=green>{bloodLevel.ToString("F0")}</color>";
         }
         else if (bloodLevel >= 33f)
         {
-            Text_blood.text = $"<color=yellow>{bloodLevel.ToString("F0")}</color>";
+            Text_blood.text = $"blood level <color=yellow>{bloodLevel.ToString("F0")}</color>";
         }
         else
         {
-            Text_blood.text = $"<color=red>{bloodLevel.ToString("F0")}</color>";
+            Text_blood.text = $"blood level <color=red>{bloodLevel.ToString("F0")}</color>";
         }
 
         #region UI
