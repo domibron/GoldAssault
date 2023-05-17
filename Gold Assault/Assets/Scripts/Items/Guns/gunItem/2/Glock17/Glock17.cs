@@ -20,6 +20,14 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
     public int currrentAmmoMag = 0;
     public List<int> ammoMags = new List<int>();
 
+    public GameObject bulletLine;
+
+    private float inputTimeCheck = 0f;
+    private float calcTime = 0f;
+
+    private DisplayText displayText;
+    private PlayerInteractionText interactionText;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,11 +36,17 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
 
         animator = GetComponent<Animator>();
 
-        for (int i = 0; i <= ((GunInfo)itemInfo).maxAmmoMags; i++)
+        for (int i = 0; i <= ((GunInfo)itemInfo).maxAmmoMags - 1; i++)
         {
             ammoMags.Add(((GunInfo)itemInfo).maxAmmoInClip);
         }
 
+        displayText = new DisplayText();
+        GameObject[] _tempGO = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject go in _tempGO)
+        {
+            if (go.name.Contains("Player")) interactionText = go.GetComponent<PlayerInteractionText>();
+        }
 
         equipped = false;
 
@@ -69,28 +83,107 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
         {
             shoot();
         }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            calcTime = Time.time;
+            print(calcTime);
+        }
+        else if (Input.GetKeyUp(KeyCode.R))
+        {
+            print(Time.time + " " + (Time.time - calcTime));
+            if (Time.time - calcTime < 1)
+            {
+                Reload();
+            }
+        }
+
+        if (Input.GetKey(KeyCode.R))
+        {
+            inputTimeCheck += Time.deltaTime;
+            if (inputTimeCheck > 1f)
+            {
+                string _tempStr = "";
+                for (int i = 0; i < ammoMags.Count; i++)
+                {
+                    if (currrentAmmoMag == i)
+                    {
+                        _tempStr += $"<color=blue>[{ammoMags[i]}]</color> ";
+                    }
+                    else
+                    {
+                        _tempStr += $"<color=white>[{ammoMags[i]}]</color> ";
+                    }
+                }
+
+                displayText.text = _tempStr;
+                displayText.priority = 1;
+
+                if (!interactionText.IsSubTextInTheList(displayText))
+                    interactionText.AddSubText(displayText);
+
+            }
+        }
+        else
+        {
+            if (inputTimeCheck != 0) inputTimeCheck = 0;
+        }
     }
 
     private void Reload()
     {
-        if (ammoMags.Count > 0)
+        if (ammoMags.Count > 1)
         {
             int _tempInt = currrentAmmoMag;
 
-            if (ammoMags[_tempInt] <= 0)
+            if (ammoMags[_tempInt] <= 0 && currrentAmmoMag < _tempInt)
             {
                 ammoMags.RemoveAt(_tempInt);
+                if (currrentAmmoMag >= ammoMags.Count - 1)
+                {
+                    currrentAmmoMag = 0;
+                }
+                else
+                {
+                    currrentAmmoMag++;
+                }
+            }
+            else if (ammoMags[_tempInt] <= 0 && currrentAmmoMag >= _tempInt)
+            {
+
+                ammoMags.RemoveAt(_tempInt);
+
+                if (currrentAmmoMag >= ammoMags.Count - 1)
+                {
+                    currrentAmmoMag = 0;
+                }
+                else
+                {
+                    // silly but it gets the point accross.
+                    currrentAmmoMag = currrentAmmoMag;
+                }
+            }
+            else if (ammoMags[_tempInt] > 0 && currrentAmmoMag == ammoMags.Count - 1)
+            {
+                currrentAmmoMag = 0;
+            }
+            else if (ammoMags[_tempInt] > 0)
+            {
+                currrentAmmoMag++;
             }
 
-            // if (currrentAmmoMag)
+            print(currrentAmmoMag + " ammo: " + ammoMags[currrentAmmoMag]);
 
-            if (currrentAmmoMag == ammoMags.Count - 1) currrentAmmoMag = 0;
+        }
+        else
+        {
+            print("last mag");
         }
     }
 
     private void shoot()
     {
-        if (localTime <= ((GunInfo)itemInfo).fireRate && ammoMags[currrentAmmoMag] > 1)
+        if (localTime <= ((GunInfo)itemInfo).fireRate && ammoMags[currrentAmmoMag] > 0)
         {
             localTime += ((GunInfo)itemInfo).fireRate;
             animator.SetTrigger("Fire");
@@ -111,6 +204,9 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, float.MaxValue, layer) && hit.transform.tag != "Player")
             {
+                GameObject _go = Instantiate(bulletLine, Vector3.zero, Quaternion.identity);
+                _go.GetComponent<BulletSmoke>().CreateLine(player.position, hit.point, 1f);
+
                 hit.collider.gameObject.GetComponent<IDamagable>()?.TakeDamage(((GunInfo)itemInfo).damage);
 
                 if (hit.collider.gameObject.layer == 8)

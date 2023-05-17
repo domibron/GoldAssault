@@ -16,6 +16,8 @@ public class Rifle : Gun
     public AudioClip audioClip;
     public AudioSource audioSource;
 
+    public GameObject bulletLine;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -81,6 +83,9 @@ public class Rifle : Gun
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, float.MaxValue, layer) && hit.transform.tag != "Player")
             {
+                GameObject _go = Instantiate(bulletLine, Vector3.zero, Quaternion.identity);
+                _go.GetComponent<BulletSmoke>().CreateLine(player.position, hit.point, 1f);
+
                 hit.collider.gameObject.GetComponent<IDamagable>()?.TakeDamage(((GunInfo)itemInfo).damage);
 
                 if (hit.collider.gameObject.layer == 8)

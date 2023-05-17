@@ -4931,6 +4931,7 @@ MonoBehaviour:
   maxHearingRange: 20
   minDistanceToInvestigate: 5
   audioClip: {fileID: 8300000, guid: 2600baf19575b01419ef5ef9f58d3d6a, type: 3}
+  bulletLine: {fileID: 5020750917400032268, guid: cb87bfc1a28169243b8707491eb40e09, type: 3}
 --- !u!195 &4432632493770707777
 NavMeshAgent:
   m_ObjectHideFlags: 0

@@ -315,11 +315,9 @@ public class PlayerController : MonoBehaviour
             playerBodyAnimator.SetFloat("Z", move.z);
 
             if (Input.GetKey(KeyCode.LeftControl)) // REPLACE WITH TIME OTHERWISE ISSUES WILL OCCUR - the lerps
-                transform.localScale = new Vector3(transform.localScale.x,
-                Mathf.Lerp(transform.localScale.y, 0.5f, transform.localScale.y * 0.2f), transform.localScale.z);
+                CC.height = Mathf.Lerp(CC.height, 1f, CC.height * 0.2f);
             else
-                transform.localScale = new Vector3(transform.localScale.x,
-                Mathf.Lerp(transform.localScale.y, 1f, transform.localScale.y * 0.2f), transform.localScale.z);
+                CC.height = Mathf.Lerp(CC.height, 2f, CC.height * 0.2f);
 
             // player jump
             if (Input.GetButtonDown("Jump") && isGrounded)

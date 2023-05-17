@@ -75,6 +75,8 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
     private AudioSource audioSource;
     public AudioClip audioClip;
 
+    public GameObject bulletLine;
+
 
     // Start is called before the first frame update
     void Start()
@@ -214,6 +216,9 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
         {
             if (currentTime >= TimeTilNextShot)
             {
+                GameObject _go = Instantiate(bulletLine, Vector3.zero, Quaternion.identity);
+                _go.GetComponent<BulletSmoke>().CreateLine(agent.transform.position, hit.point, 1f);
+
                 currentTime = 0;
                 // print(hit.transform.name);
                 hit.collider.GetComponent<IDamagable>()?.TakeDamage(5f);
