@@ -16,7 +16,7 @@ MonoBehaviour:
   ItemID: 1
   damage: 34
   fireRate: 0.1
-  reloadSpeed: 3
+  reloadSpeed: 1
   maxAmmoInClip: 30
   maxAmmoMags: 4
   startingPos: {x: 0, y: 0, z: 0}

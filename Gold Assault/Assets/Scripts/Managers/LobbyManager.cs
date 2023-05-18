@@ -49,6 +49,7 @@ public class LobbyManager : MonoBehaviour
     public Image ItemImage;
     public TMP_Text ItemDescription;
 
+    public Animator LockerAnimator;
 
     // Start is called before the first frame update
     void Start()
@@ -178,6 +179,7 @@ public class LobbyManager : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
         LoadoutIsOpen = true;
+        LockerAnimator.SetBool("Open", true);
     }
 
     public void CloseLoadout()
@@ -186,6 +188,7 @@ public class LobbyManager : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         LoadoutIsOpen = false;
+        LockerAnimator.SetBool("Open", false);
     }
 
     public void OpenWeaponSections(int _i)

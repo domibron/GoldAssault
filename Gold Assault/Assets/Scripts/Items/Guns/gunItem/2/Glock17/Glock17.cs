@@ -28,6 +28,8 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
     private DisplayText displayText;
     private PlayerInteractionText interactionText;
 
+    private bool isReloading = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -87,14 +89,14 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
         if (Input.GetKeyDown(KeyCode.R))
         {
             calcTime = Time.time;
-            print(calcTime);
+            // print(calcTime);
         }
         else if (Input.GetKeyUp(KeyCode.R))
         {
-            print(Time.time + " " + (Time.time - calcTime));
+            // print(Time.time + " " + (Time.time - calcTime));
             if (Time.time - calcTime < 1)
             {
-                Reload();
+                StartCoroutine(Reload());
             }
         }
 
@@ -130,8 +132,14 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
         }
     }
 
-    private void Reload()
+    private IEnumerator Reload()
     {
+        animator.SetTrigger("Reload");
+
+        isReloading = true;
+
+        yield return new WaitForSeconds(((GunInfo)itemInfo).reloadSpeed);
+
         if (ammoMags.Count > 1)
         {
             int _tempInt = currrentAmmoMag;
@@ -150,10 +158,7 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
             }
             else if (ammoMags[_tempInt] <= 0 && currrentAmmoMag >= _tempInt)
             {
-
-                ammoMags.RemoveAt(_tempInt);
-
-                if (currrentAmmoMag >= ammoMags.Count - 1)
+                if (currrentAmmoMag == ammoMags.Count - 1)
                 {
                     currrentAmmoMag = 0;
                 }
@@ -162,6 +167,7 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
                     // silly but it gets the point accross.
                     currrentAmmoMag = currrentAmmoMag;
                 }
+                ammoMags.RemoveAt(_tempInt);
             }
             else if (ammoMags[_tempInt] > 0 && currrentAmmoMag == ammoMags.Count - 1)
             {
@@ -179,11 +185,13 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
         {
             print("last mag");
         }
+
+        isReloading = false;
     }
 
     private void shoot()
     {
-        if (localTime <= ((GunInfo)itemInfo).fireRate && ammoMags[currrentAmmoMag] > 0)
+        if (localTime <= ((GunInfo)itemInfo).fireRate && ammoMags[currrentAmmoMag] > 0 && !isReloading)
         {
             localTime += ((GunInfo)itemInfo).fireRate;
             animator.SetTrigger("Fire");

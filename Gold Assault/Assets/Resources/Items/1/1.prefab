@@ -2193,6 +2193,8 @@ MonoBehaviour:
   audioClip: {fileID: 8300000, guid: 2600baf19575b01419ef5ef9f58d3d6a, type: 3}
   audioSource: {fileID: 7658853782145878834}
   bulletLine: {fileID: 5020750917400032268, guid: cb87bfc1a28169243b8707491eb40e09, type: 3}
+  currrentAmmoMag: 0
+  ammoMags: 
 --- !u!82 &7658853782145878834
 AudioSource:
   m_ObjectHideFlags: 0
