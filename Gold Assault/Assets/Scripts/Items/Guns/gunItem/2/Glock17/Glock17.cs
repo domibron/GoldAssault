@@ -9,7 +9,7 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
     private bool equipped = false;
 
     private float localTime = 0f;
-    private float delay = 0f;
+    private float timeUntillNextFire = 0f;
 
     private Transform player;
     private Camera cam;
@@ -26,6 +26,7 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
     private float calcTime = 0f;
 
     private DisplayText displayText;
+    private DisplayText displayTextReload;
     private PlayerInteractionText interactionText;
 
     private bool isReloading = false;
@@ -44,6 +45,8 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
         }
 
         displayText = new DisplayText();
+        displayTextReload = new DisplayText("Reloading", 2);
+
         GameObject[] _tempGO = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject go in _tempGO)
         {
@@ -59,8 +62,7 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
     {
         if (Time.timeScale == 0) return;
 
-        if (localTime > 0) localTime -= Time.unscaledDeltaTime;
-        else localTime = 0;
+        localTime += Time.deltaTime;
 
         if (gameObject.activeSelf && !equipped)
         {
@@ -136,6 +138,8 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
     {
         animator.SetTrigger("Reload");
 
+        interactionText.AddSubText(displayTextReload);
+
         isReloading = true;
 
         yield return new WaitForSeconds(((GunInfo)itemInfo).reloadSpeed);
@@ -191,9 +195,10 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
 
     private void shoot()
     {
-        if (localTime <= ((GunInfo)itemInfo).fireRate && ammoMags[currrentAmmoMag] > 0 && !isReloading)
+        print(localTime);
+        if (localTime >= timeUntillNextFire && ammoMags[currrentAmmoMag] > 0 && !isReloading)
         {
-            localTime += ((GunInfo)itemInfo).fireRate;
+            timeUntillNextFire = localTime + ((GunInfo)itemInfo).fireRate;
             animator.SetTrigger("Fire");
 
             audioSource.clip = audioClip;
@@ -212,8 +217,11 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, float.MaxValue, layer) && hit.transform.tag != "Player")
             {
+                PlaceBulletHole(hit.point, hit.normal);
+
                 GameObject _go = Instantiate(bulletLine, Vector3.zero, Quaternion.identity);
-                _go.GetComponent<BulletSmoke>().CreateLine(player.position, hit.point, 1f);
+                Vector3 vec = new Vector3(player.position.x, player.position.y - 0.2f, player.position.z);
+                _go.GetComponent<BulletSmoke>().CreateLine(vec, hit.point, 1f);
 
                 hit.collider.gameObject.GetComponent<IDamagable>()?.TakeDamage(((GunInfo)itemInfo).damage);
 
@@ -222,6 +230,7 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
                     Wall wall = hit.collider.gameObject.GetComponent<Wall>();
                     wall.AddBulletHole(ray, 0.1f);
                 }
+
             }
 
             foreach (GameObject go in PlayerRefernceItems.current.AINoiseAlertSubs)
@@ -231,6 +240,17 @@ public class Glock17 : Gun // index ID is 2 because it is a pistol
         }
 
 
+    }
+
+    void PlaceBulletHole(Vector3 hitPosition, Vector3 hitNormal) // universal function for all clients.
+    {
+        Collider[] colliders = Physics.OverlapSphere(hitPosition, 0.3f);
+        if (colliders.Length != 0)
+        {
+            GameObject bulletImpactObject = Instantiate(bulletImpactPrefab, hitPosition + hitNormal * 0.001f, Quaternion.LookRotation(hitNormal, Vector3.up) * bulletImpactPrefab.transform.rotation);
+            Destroy(bulletImpactObject, 10f);
+            bulletImpactObject.transform.SetParent(colliders[0].transform);
+        }
     }
 
     public override void UseMouse0()

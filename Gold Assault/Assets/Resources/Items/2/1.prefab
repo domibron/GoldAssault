@@ -560,6 +560,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemInfo: {fileID: 11400000, guid: 47d7c46d9c78ca4458069eb73b57942f, type: 2}
   itemGameObject: {fileID: 2016139007360379452}
+  bulletImpactPrefab: {fileID: 5781831912557500219, guid: 47a82407e880b9440b8676cfbbf6db71, type: 3}
   audioClip: {fileID: 8300000, guid: 2600baf19575b01419ef5ef9f58d3d6a, type: 3}
   audioSource: {fileID: 586521329}
   currrentAmmoMag: 0
