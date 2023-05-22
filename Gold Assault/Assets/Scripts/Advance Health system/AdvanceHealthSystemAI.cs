@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AdvanceHealthSystemAI : MonoBehaviour
 {
+    public bool Immortal = false;
+
     public float maxHealth = 100f;
 
     public float bloodLevel = 100f;
@@ -50,20 +52,20 @@ public class AdvanceHealthSystemAI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (playerBody[0] <= 0)
+        if (playerBody[0] <= 0 && !Immortal)
         {
             // player is dead
             Destroy(this.gameObject);
 
         }
 
-        if (playerBody[1] <= 0)
+        if (playerBody[1] <= 0 && !Immortal)
         {
             // player is dead
             Destroy(this.gameObject);
         }
 
-        if (bloodLevel <= 0)
+        if (bloodLevel <= 0 && !Immortal)
         {
             // player is dead
             Destroy(this.gameObject);
@@ -72,7 +74,7 @@ public class AdvanceHealthSystemAI : MonoBehaviour
         if (bleeding)
         {
             // AI cannot stop bleeding by using a key, they need to think for them selfs sometimes.
-            // I say, let the bleed to death if they cannot fight to survive.
+            // I say, let thee bleed to death if they cannot fight to survive.
 
             bloodLevel -= Time.deltaTime * 3f * bleedMultipliyer;
 

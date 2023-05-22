@@ -58,7 +58,8 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
         paniced,
         raged,
         surrender,
-        engaging
+        engaging,
+        NOAI
     }
 
     public enum AIType
@@ -77,6 +78,8 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 
     public GameObject bulletLine;
 
+    private AdvanceHealthSystemAI healthSystem;
+
 
     // Start is called before the first frame update
     void Start()
@@ -88,13 +91,31 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
         //! chamge to random
         currentAIType = AIType.hostile;
 
-        currentState = State.alive;
+        healthSystem = GetComponent<AdvanceHealthSystemAI>();
+
+        if (currentState != State.NOAI)
+        {
+            currentState = State.alive;
+        }
+        else
+        {
+            healthSystem.Immortal = true;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         //transform.LookAt(playerTarg);
+        if (currentState == State.NOAI)
+        {
+
+
+            return;
+        }
+
+        print("uh oh");
+
 
         if (health <= 0)
         {
@@ -106,7 +127,9 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
             return;
         }
 
+        // TODO change to the tried and trusted one
         if (currentTime <= TimeTilNextShot) currentTime += Time.deltaTime;
+
 
         LookAtPlayerWithLineOfSight();
 
@@ -230,6 +253,8 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 
     public void NoiseMade(Vector3 positionOfNoise)
     {
+        if (currentState == State.NOAI) return;
+
         if (Vector3.Distance(transform.position, positionOfNoise) <= maxHearingRange)
         {
             Alerted = true;

@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 1287066705}
   - component: {fileID: 1287066707}
   - component: {fileID: 1287066706}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Bleed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5080,6 +5080,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c110fee186b8f6a46be277379a4d9da3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Immortal: 0
   maxHealth: 100
   bloodLevel: 100
   helmet: 0
