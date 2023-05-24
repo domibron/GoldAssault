@@ -135,7 +135,7 @@ public class LobbyManager : MonoBehaviour
     {
         LevelSelectorUI.SetActive(true);
         Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.lockState = CursorLockMode.None;
         LevelSelectorIsOpen = true;
         mapDescriptionObject.SetActive(false);
     }
@@ -177,7 +177,7 @@ public class LobbyManager : MonoBehaviour
     {
         LoadoutUI.SetActive(true);
         Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.lockState = CursorLockMode.None;
         LoadoutIsOpen = true;
         LockerAnimator.SetBool("Open", true);
     }

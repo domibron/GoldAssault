@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
+public class BasicAI : MonoBehaviour, INoiseAlert, IStunable
 {
     [Header("Player and AI corilation")] // ! https://youtu.be/UjkSFoLxesw
 
@@ -20,6 +20,7 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 
     public AIType currentAIType;
     public State currentState;
+    private State previousState;
 
     [Range(-1, 1)] private float mood = 0f; // this is a percentage; -100 to 100 percent
 
@@ -32,8 +33,8 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 
     [Space, Header("AI roming")] // space here so I can look at inspector better and understant what is for what.
 
-    [SerializeField] private float wanderingTime = 3f;
-    [SerializeField] private float wanderRadius = 3f;
+    [SerializeField] private float wanderingTime = 6f;
+    [SerializeField] private float wanderRadius = 6f;
 
 
     private Transform targetLocation;
@@ -59,6 +60,7 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
         raged,
         surrender,
         engaging,
+        stuned,
         NOAI
     }
 
@@ -70,7 +72,9 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 
     [Space, Header("AI engagement")]
 
-    private float TimeTilNextShot = 1f;
+    private float timeTilNextShot = 1f;
+    private float waitingTime = 0f;
+    private float stunTime = 0f;
     private float currentTime = 0f;
 
     private AudioSource audioSource;
@@ -109,26 +113,27 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
         //transform.LookAt(playerTarg);
         if (currentState == State.NOAI)
         {
-
-
             return;
         }
-
-        print("uh oh");
-
 
         if (health <= 0)
         {
             currentState = State.dead;
 
-            // for now I will remove the game object.
+            // for now I will remove the game object. ragdolls
             Destroy(gameObject);
 
             return;
         }
 
         // TODO change to the tried and trusted one
-        if (currentTime <= TimeTilNextShot) currentTime += Time.deltaTime;
+        currentTime += Time.deltaTime;
+
+
+        if (currentTime < stunTime)
+        {
+            print("I am stuned");
+        }
 
 
         LookAtPlayerWithLineOfSight();
@@ -141,7 +146,7 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 
         timer += Time.deltaTime;
 
-        if ((timer >= wanderingTime || Vector3.Distance(transform.position, agent.pathEndPosition) < 2f) && !Alerted || !agent.hasPath)
+        if ((timer >= wanderingTime || Vector3.Distance(transform.position, agent.pathEndPosition) < 2f) && currentState != State.alerted || !agent.hasPath)
         {
             Vector3 newPos = RandomNavSphere(transform.position, wanderRadius, -1);
             NavMeshPath path = new NavMeshPath();
@@ -161,7 +166,8 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
         {
             if (agent.isStopped || Vector3.Distance(targetVector, transform.position) < minDistanceToInvestigate)
             {
-                Alerted = false;
+                currentState = State.alive;
+                // Alerted = false;
             }
         }
     }
@@ -237,12 +243,12 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward, out hit, float.MaxValue, layer))
         {
-            if (currentTime >= TimeTilNextShot)
+            if (currentTime >= waitingTime)
             {
                 GameObject _go = Instantiate(bulletLine, Vector3.zero, Quaternion.identity);
                 _go.GetComponent<BulletSmoke>().CreateLine(agent.transform.position, hit.point, 1f);
 
-                currentTime = 0;
+                waitingTime = currentTime + timeTilNextShot;
                 // print(hit.transform.name);
                 hit.collider.GetComponent<IDamagable>()?.TakeDamage(5f);
                 audioSource.clip = audioClip;
@@ -257,15 +263,11 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 
         if (Vector3.Distance(transform.position, positionOfNoise) <= maxHearingRange)
         {
-            Alerted = true;
+            // Alerted = true;
+            currentState = State.alerted;
             targetVector = positionOfNoise;
             agent.destination = positionOfNoise;
         }
-    }
-
-    public void TakeDamage(float damage)
-    {
-        health -= damage;
     }
 
     void OnDestroy()
@@ -273,5 +275,13 @@ public class BasicAI : MonoBehaviour, INoiseAlert, IDamagable
 
         PlayerRefernceItems.current.AINoiseAlertSubs.Remove(gameObject);
 
+    }
+
+    public void GetStunned(float stunTime)
+    {
+        previousState = currentState;
+        currentState = State.stuned;
+
+        stunTime = currentTime + stunTime;
     }
 }

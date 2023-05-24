@@ -5,6 +5,7 @@ using Interface.IInteractable;
 using UnityEngine.UI;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
@@ -71,6 +72,7 @@ public class PlayerController : MonoBehaviour
     // * for the inventory so this knows what is equiped.
     public GameObject[] L_inventory = new GameObject[5];
 
+    public TMP_Text enemiesLeftText;
 
     // Start is called before the first frame update
     void Start()
@@ -121,11 +123,35 @@ public class PlayerController : MonoBehaviour
 
         // print(ans);
 
+
+
+
+
+        // ! TERRIBLE DO NOT USE THE NOISE ALERTS, CREATE ANOTHER ARRAY OF BOOLS OR SOMTHING
+        if (PlayerRefernceItems.current.AINoiseAlertSubs.Count <= 0)
+        {
+            GetComponent<PauseMenu>().GameEnd();
+        }
+        else
+        {
+            enemiesLeftText.text = $"Enemies Left\n[{PlayerRefernceItems.current.AINoiseAlertSubs.Count}]";
+        }
+
+
+
+
+
+
+
+
+
+
         // =============================================================== leaning =====================================================================
         // yes, we are in update.
 
         // lerping. input a, input b and value between 0 and 1.
         // if the value is closer to 0 then a is more so if a is 10 and b is 20 and value is 0.2 then it will give 12.
+
 
         float _increaser = 3f;
 

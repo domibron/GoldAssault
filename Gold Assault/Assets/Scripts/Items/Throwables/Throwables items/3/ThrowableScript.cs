@@ -5,6 +5,9 @@ using UnityEngine;
 public class ThrowableScript : Throwable
 {
 
+    public GameObject FlashbangObject;
+
+    public Transform instanciationPoint;
 
     private Animator animator;
 
@@ -25,11 +28,13 @@ public class ThrowableScript : Throwable
             if (Input.GetMouseButtonDown(0))
             {
                 animator.SetTrigger("Throw");
+                ThrowObject();
             }
         }
         else if (Input.GetMouseButtonDown(0))
         {
             animator.SetTrigger("Throw");
+            ThrowObject();
 
         }
         else if (!Input.GetMouseButton(1) && !Input.GetMouseButtonDown(0))
@@ -38,6 +43,18 @@ public class ThrowableScript : Throwable
         }
     }
 
+    private void ThrowObject()
+    {
+        GameObject item = Instantiate(FlashbangObject, instanciationPoint.position, Quaternion.Euler(0, 0, 0));
+        item.transform.LookAt(transform.position);
+        item.GetComponent<ObjectFlashbang>().damage = ((ThrowableInfo)itemInfo).damage;
+
+        // TODO ending need changing
+        item.GetComponent<ObjectFlashbang>().stunTime = ((ThrowableInfo)itemInfo).damage;
+
+        item.GetComponent<Rigidbody>().AddForce(-(item.transform.forward) * 8f, ForceMode.Impulse);
+        item.GetComponent<Rigidbody>().AddForce((item.transform.up) * 8f, ForceMode.Impulse);
+    }
 
 
 
