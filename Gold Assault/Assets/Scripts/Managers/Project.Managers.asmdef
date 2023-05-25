@@ -7,7 +7,9 @@
         "Project.SaveSystem",
         "Project.MasterManager",
         "Project.Player",
-        "Project.UI"
+        "Project.UI",
+        "Project.UI.PauseMenu",
+        "Project.GameManager"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

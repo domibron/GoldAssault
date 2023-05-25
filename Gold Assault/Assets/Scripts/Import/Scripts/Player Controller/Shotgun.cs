@@ -13,11 +13,11 @@ public class Shotgun : AGun
 
     private float nextShootTime = 0f;
 
-    //private AudioSource audioSource;
+    private AudioSource audioSource;
 
     private void Start()
     {
-        //audioSource = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     public override void Shoot()
@@ -50,11 +50,11 @@ public class Shotgun : AGun
                 Wall wall = hits[rhi].collider.gameObject.GetComponent<Wall>();
                 float distance = hits[rhi].distance;
                 float xCurveDropoff = distance / destructionLvDropoffMaxRange;
-                float destructionLvWithDropoff = destructionLevel * destructionLvDropoff.Evaluate(xCurveDropoff);
+                float destructionLvWithDropoff = destructionLevel * destructionLvDropoff.Evaluate(xCurveDropoff);                
                 wall.AddBulletHole(ray, destructionLvWithDropoff);
             }
         }
 
-        //audioSource.Play();
+        audioSource.Play();
     }
 }

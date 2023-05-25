@@ -4,13 +4,12 @@ using UnityEngine;
 using Interface.IInteractable;
 using UnityEngine.UI;
 using System.Linq;
+using UnityEngine.SceneManagement;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
     private List<INoiseAlert> noiseAlertSub;
-
-    [SerializeField] private float currentHealth = 100f;
-    [SerializeField] private float maxHealth = 100f;
 
     private CharacterController CC;
 
@@ -46,46 +45,211 @@ public class PlayerController : MonoBehaviour
     private bool waiting = false;
 
 
-    [SerializeField] private GameObject rappelInteraction;
-    [SerializeField] private Image rappelImage;
+    // [SerializeField] private GameObject rappelInteraction;
+    // [SerializeField] private Image rappelImage;
+
+    private PlayerInteractionText playerInteractionText;
+
+    private DisplayText rappelDisplayText;
 
     private float currentTime = 0f;
+
+
+    //leaning stuff
+    public GameObject LeanPoint;
+    public float leanAmount = 30f;
+    public float currentLean;
+    private float leanTime = 0f;
+    private float savedLeanStore = 0f;
+    private float otherLeanStore = 0f;
+    private float deviationCorrection = 0f;
+    private float reduction = 1f;
+    private bool leftLean = false;
+    private bool rightLean = false;
+
+    public Animator playerBodyAnimator;
 
     // * for the inventory so this knows what is equiped.
     public GameObject[] L_inventory = new GameObject[5];
 
+    public TMP_Text enemiesLeftText;
 
     // Start is called before the first frame update
     void Start()
     {
         CC = GetComponent<CharacterController>();
-        cam = transform.Find("Camera Holder").gameObject;
+        cam = transform.Find("Lean Point").Find("Camera Holder").gameObject;
+        print(cam.name);
+        LeanPoint = transform.Find("Lean Point").gameObject;
 
         Cursor.lockState = CursorLockMode.Locked;
 
-        rappelInteraction.SetActive(false);
+        // rappelInteraction.SetActive(false);
+        playerInteractionText = GetComponent<PlayerInteractionText>();
 
-        noiseAlertSub = new List<INoiseAlert>(FindObjectsOfType<Object>().OfType<INoiseAlert>());
+        rappelDisplayText = new DisplayText();
 
+        rappelDisplayText.text = "Hold <color=blue>F</color> to <color=blue>Rappel</color>";
+        rappelDisplayText.priority = 2;
+
+        // noiseAlertSub = new List<INoiseAlert>(FindObjectsOfType<Object>().OfType<INoiseAlert>());
+        PlayerRefernceItems.current.AINoiseAlertSubs = new List<GameObject>(GameObject.FindGameObjectsWithTag("AI"));
+
+        sensitivity = SaveData.current.sensitivity;
+
+        SaveManager.current.onSave += OnGameSave;
+    }
+
+    private void OnGameSave()
+    {
+        sensitivity = SaveData.current.sensitivity;
     }
 
     // Update is called once per frame
     void Update()
     {
+        // if (currentHealth <= 0)
+        // {
+        //     SceneManager.LoadScene(SceneManager.GetSceneAt(0).buildIndex);
+        // }
+
+        // float ans = currentHealth / maxHealth;
+        // ans = 1 - ans;
+        // ans /= 2;
+        // //ans = 127.5f * ans;
+        // HurtImage.color = new Color(255, 0, 0, ans);
+
+        // ^^^^^^ move into function;
+
+        // print(ans);
+
+
+
+
+
+        // ! TERRIBLE DO NOT USE THE NOISE ALERTS, CREATE ANOTHER ARRAY OF BOOLS OR SOMTHING
+        if (PlayerRefernceItems.current.AINoiseAlertSubs.Count <= 0)
+        {
+            GetComponent<PauseMenu>().GameEnd();
+        }
+        else
+        {
+            enemiesLeftText.text = $"Enemies Left\n[{PlayerRefernceItems.current.AINoiseAlertSubs.Count}]";
+        }
+
+
+
+
+
+
+
+
+
+
+        // =============================================================== leaning =====================================================================
+        // yes, we are in update.
+
+        // lerping. input a, input b and value between 0 and 1.
+        // if the value is closer to 0 then a is more so if a is 10 and b is 20 and value is 0.2 then it will give 12.
+
+
+        float _increaser = 3f;
+
+        if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.E))
+        {
+            // currentLean = 0f;
+            leanTime = 0f;
+
+            if ((currentLean > 0 && rightLean) || (currentLean < 0 && leftLean))
+            {
+                float _temp = Mathf.Abs(currentLean) / leanAmount; // gets the decimal percentage.
+                _temp = 1 - _temp; // invert decimal percentage. tip, -= is the same as var - value not value - var.
+                _temp += 0.5f; // add 0.5 for reduction.
+
+                reduction = _temp;
+            }
+
+
+
+            // savedLeanStore = 0f;
+        }
+
+        if (Input.GetKey(KeyCode.Q))
+        {
+            leanTime += Time.deltaTime * _increaser * reduction;
+            currentLean = Mathf.Lerp(savedLeanStore, leanAmount, leanTime);
+
+            savedLeanStore = currentLean;
+            leftLean = true;
+        }
+        else
+        {
+            leftLean = false;
+        }
+
+        if (Input.GetKey(KeyCode.E))
+        {
+            leanTime += Time.deltaTime * _increaser * reduction;
+            currentLean = Mathf.Lerp(savedLeanStore, -leanAmount, leanTime);
+
+            savedLeanStore = currentLean;
+            rightLean = true;
+        }
+        else
+        {
+            rightLean = false;
+        }
+
+        if (leanTime > 0 && !rightLean && !leftLean)
+        {
+            if (leanTime > 1) leanTime = 1f;
+            if (reduction != 1) reduction = 1f;
+
+            leanTime -= Time.deltaTime * _increaser * reduction * 2f;
+            currentLean = Mathf.Lerp(0, savedLeanStore, leanTime);
+
+
+            // otherLeanStore = currentLean;
+        }
+        else if (!rightLean && !leftLean)
+        {
+            currentLean = 0f;
+            leanTime = 0f;
+            reduction = 1f;
+
+            savedLeanStore = 0f;
+        }
+
+        LeanPoint.transform.localRotation = Quaternion.Euler(0, 0, currentLean);
+
+
+
+        // ========================================================== end of leaning ==============================================================
+
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
 
-        // if (Input.GetKeyDown(KeyCode.L))
-        // {
-        //     MadeSomeNoise();
-        // }
+        // remove
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            MadeSomeNoise();
+        }
 
         //move /= speedNurf;
 
         if (canRappel && !isRappelling)
         {
-            rappelInteraction.SetActive(true);
-            rappelImage.fillAmount = currentTime;
+            // rappelInteraction.SetActive(true);
+
+
+
+            // rappelImage.fillAmount = currentTime;
+            //do something to indicate to player.
+            if (!playerInteractionText.IsInTheList(rappelDisplayText))
+            {
+                playerInteractionText.AddInteractionText(rappelDisplayText);
+            }
+
             if (Input.GetKey(KeyCode.F))
             {
                 //print(currentTime);
@@ -139,7 +303,12 @@ public class PlayerController : MonoBehaviour
         }
         else if (!canRappel && !isRappelling)
         {
-            rappelInteraction.SetActive(false);
+            // rappelInteraction.SetActive(false);
+            if (playerInteractionText.IsInTheList(rappelDisplayText))
+            {
+                playerInteractionText.RemoveInteractionText(rappelDisplayText);
+            }
+
         }
 
 
@@ -168,12 +337,13 @@ public class PlayerController : MonoBehaviour
                 Debug.LogError("character vars not set");
 
 
+            playerBodyAnimator.SetFloat("X", move.x);
+            playerBodyAnimator.SetFloat("Z", move.z);
+
             if (Input.GetKey(KeyCode.LeftControl)) // REPLACE WITH TIME OTHERWISE ISSUES WILL OCCUR - the lerps
-                transform.localScale = new Vector3(transform.localScale.x,
-                Mathf.Lerp(transform.localScale.y, 0.5f, transform.localScale.y * 0.2f), transform.localScale.z);
+                CC.height = Mathf.Lerp(CC.height, 1f, CC.height * 0.2f);
             else
-                transform.localScale = new Vector3(transform.localScale.x,
-                Mathf.Lerp(transform.localScale.y, 1f, transform.localScale.y * 0.2f), transform.localScale.z);
+                CC.height = Mathf.Lerp(CC.height, 2f, CC.height * 0.2f);
 
             // player jump
             if (Input.GetButtonDown("Jump") && isGrounded)
@@ -220,7 +390,9 @@ public class PlayerController : MonoBehaviour
             }
 
             if (atWindow)
+            {
                 print("SAPCE!!!");
+            }
 
             if (atWindow && Input.GetKeyDown(KeyCode.Space))
             {
@@ -236,8 +408,13 @@ public class PlayerController : MonoBehaviour
 
             velocity.y = 0f;
 
+            if (!playerInteractionText.IsInTheList(rappelDisplayText))
+            {
+                rappelDisplayText.text = "Hold <color=blue>F</color> to <color=blue>Stop rappelling</color>";
+                playerInteractionText.AddInteractionText(rappelDisplayText);
+            }
 
-            rappelImage.fillAmount = currentTime;
+            // rappelImage.fillAmount = currentTime;
             if (Input.GetKey(KeyCode.F))
             {
                 //print(currentTime);
@@ -285,34 +462,32 @@ public class PlayerController : MonoBehaviour
 
 
 
-
         //Camera
         float mouseX = Input.GetAxisRaw("Mouse X") * sensitivity;
         float mouseY = Input.GetAxisRaw("Mouse Y") * sensitivity;
 
-        if (!isRappelling) // put in the uper if statement
+        if (Time.timeScale == 1)
         {
-            yRotation -= mouseY;
-            yRotation = Mathf.Clamp(yRotation, -90f, 90f);
+            if (!isRappelling) // put in the uper if statement
+            {
+                yRotation -= mouseY;
+                yRotation = Mathf.Clamp(yRotation, -90f, 90f);
 
 
-            transform.Rotate(Vector3.up * mouseX);
-            cam.transform.localRotation = Quaternion.Euler(yRotation, 0, 0);
-        }
-        else if (isRappelling)
-        {
+                transform.Rotate(Vector3.up * mouseX);
+                cam.transform.localRotation = Quaternion.Euler(yRotation, 0, 0);
+            }
+            else if (isRappelling)
+            {
+                yRotation -= mouseY;
+                yRotation = Mathf.Clamp(yRotation, -90f, 90f);
 
 
-            yRotation -= mouseY;
-            yRotation = Mathf.Clamp(yRotation, -90f, 90f);
+                xRotation += mouseX;
+                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-
-            xRotation += mouseX;
-            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-
-            cam.transform.localRotation = Quaternion.Euler(yRotation, xRotation, 0);
-
-
+                cam.transform.localRotation = Quaternion.Euler(yRotation, xRotation, 0);
+            }
         }
 
         // ground check
@@ -416,13 +591,11 @@ public class PlayerController : MonoBehaviour
 
     private void MadeSomeNoise()
     {
-        foreach (INoiseAlert ina in noiseAlertSub)
+        foreach (GameObject go in PlayerRefernceItems.current.AINoiseAlertSubs)
         {
-            ina.NoiseMade(transform.position);
+            go.GetComponent<INoiseAlert>().NoiseMade(transform.position);
         }
     }
-
-
 
 
 
@@ -495,7 +668,4 @@ public class PlayerController : MonoBehaviour
         CC.enabled = true;
         // print("d");
     }
-
-
-
 }

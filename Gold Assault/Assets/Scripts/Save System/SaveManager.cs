@@ -33,7 +33,10 @@ public class SaveManager : MonoBehaviour
             DontDestroyOnLoad(this);
         }
 
-        SaveData.current = (SaveData)SerializationManager.Load(Application.persistentDataPath + "/saves/0.save");
+        if (SerializationManager.Load(Application.persistentDataPath + "/saves/0.save") == null)
+            SerializationManager.Save("0", SaveData.current);
+        else
+            SaveData.current = (SaveData)SerializationManager.Load(Application.persistentDataPath + "/saves/0.save");
     }
 
     public void ForceSave()

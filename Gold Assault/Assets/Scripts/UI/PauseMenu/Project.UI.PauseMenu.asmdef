@@ -1,0 +1,16 @@
+{
+    "name": "Project.UI.PauseMenu",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a2beec557b6e69b4d90320913b2d76e5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -39,8 +39,8 @@ public class DoorMK2 : MonoBehaviour
     private float door_currentDisableTime = 0;
     private float otherDoor_currentDisableTime = 0;
 
-    private bool isOpen = false;
-    private bool isOtherDoorOpen = false;
+    [SerializeField] private bool isOpen = false;
+    [SerializeField] private bool isOtherDoorOpen = false;
 
     private float currentTime = 0;
     private float currentTimeOther = 0;

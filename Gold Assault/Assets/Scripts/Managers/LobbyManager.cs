@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 
 public class LobbyManager : MonoBehaviour
 {
+    private PauseMenu pm;
+
     public GameObject LevelSelectorUI;
     public GameObject LoadoutUI;
 
@@ -21,15 +23,33 @@ public class LobbyManager : MonoBehaviour
 
     public ItemInformationForLoadout[] itemInformations = new ItemInformationForLoadout[5];
 
+    // loadout
     private int[] tempInventory = new int[5];
 
     private int selectedItemSlotType = 0;
     private int selectedItemID = 0;
 
+    private bool LevelSelectorIsOpen = false;
+    private bool LoadoutIsOpen = false;
+
+
+    //map information
+    public GameObject mapDescriptionObject;
+
+    public TMP_Text MapName;
+    public Image MapImage;
+    public TMP_Text MapDescription;
+
+    private string mapBuildName;
+    private int mapIndexNumber;
+
+
     // things for the item information.
     public TMP_Text ItemName;
     public Image ItemImage;
     public TMP_Text ItemDescription;
+
+    public Animator LockerAnimator;
 
     // Start is called before the first frame update
     void Start()
@@ -38,8 +58,9 @@ public class LobbyManager : MonoBehaviour
         LoadoutUI.SetActive(false);
         ItemInformationSection.SetActive(false);
         EquipButton.SetActive(false);
+        mapDescriptionObject.SetActive(false);
 
-        closeWeaponSections();
+        CloseWeaponSections();
 
         if (MasterManger.current == null)
         {
@@ -61,6 +82,16 @@ public class LobbyManager : MonoBehaviour
 
         LoadInventory();
 
+        GameObject[] temp_gameObjectArray = GameObject.FindGameObjectsWithTag("Player");
+
+        foreach (GameObject go in temp_gameObjectArray)
+        {
+            if (go.name == "Player")
+            {
+                pm = go.GetComponent<PauseMenu>();
+            }
+        }
+
     }
 
     private void OnSaveGame()
@@ -71,14 +102,42 @@ public class LobbyManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (LevelSelectorIsOpen || LoadoutIsOpen)
+        {
+            pm.OveridingEscape = true;
 
+            pm.OveridingTimeScale = true;
+
+            Time.timeScale = 0f;
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (LevelSelectorIsOpen)
+                {
+                    CloseMap();
+                }
+
+                if (LoadoutIsOpen)
+                {
+                    CloseLoadout();
+                }
+            }
+        }
+        else
+        {
+            // this may cause errors - making a future not about it.|A
+            pm.OveridingEscape = false;
+            pm.OveridingTimeScale = false;
+        }
     }
 
     public void OpenMap()
     {
         LevelSelectorUI.SetActive(true);
         Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.lockState = CursorLockMode.None;
+        LevelSelectorIsOpen = true;
+        mapDescriptionObject.SetActive(false);
     }
 
     public void CloseMap()
@@ -86,13 +145,41 @@ public class LobbyManager : MonoBehaviour
         LevelSelectorUI.SetActive(false);
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        LevelSelectorIsOpen = false;
+    }
+
+    public void OpenMapDescription(MapInformation mapInformation)
+    {
+        MapName.text = mapInformation.nameOfMap;
+        MapImage.sprite = mapInformation.image;
+        MapDescription.text = mapInformation.description;
+
+        mapBuildName = mapInformation.mapBuildName;
+        mapIndexNumber = mapInformation.mapIndexNumber;
+
+        mapDescriptionObject.SetActive(true);
+    }
+
+    public void CloseMapDescription()
+    {
+        mapDescriptionObject.SetActive(false);
+
+    }
+
+    public void LoadSelectedLevel()
+    {
+
+        Debug.LogErrorFormat("Something went worng! name of map {0}, map index {1} and gotten index {2} ", mapBuildName, mapIndexNumber, SceneManager.GetSceneByName(mapBuildName).buildIndex);
+        LoadMapName(mapBuildName);
     }
 
     public void OpenLoadout()
     {
         LoadoutUI.SetActive(true);
         Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.lockState = CursorLockMode.None;
+        LoadoutIsOpen = true;
+        LockerAnimator.SetBool("Open", true);
     }
 
     public void CloseLoadout()
@@ -100,9 +187,11 @@ public class LobbyManager : MonoBehaviour
         LoadoutUI.SetActive(false);
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        LoadoutIsOpen = false;
+        LockerAnimator.SetBool("Open", false);
     }
 
-    public void openWeaponSections(int _i)
+    public void OpenWeaponSections(int _i)
     {
         for (int i = 0; i < WeaponSections.Length; i++)
         {
@@ -118,7 +207,7 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    public void openLastWeaponSection(int _i)
+    public void OpenLastWeaponSection(int _i)
     {
         for (int i = 0; i < WeaponSections.Length; i++)
         {
@@ -134,7 +223,7 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    public void closeWeaponSections()
+    public void CloseWeaponSections()
     {
         for (int i = 0; i < WeaponSections.Length; i++)
         {
@@ -176,6 +265,9 @@ public class LobbyManager : MonoBehaviour
     public void EquipItem()
     {
         tempInventory[selectedItemSlotType - 1] = selectedItemID;
+        SaveData.current.inventory = tempInventory;
+        SaveManager.current.ForceSave();
+        ItemInformationSection.SetActive(false);
     }
 
     public void EquipAllItems()
@@ -238,11 +330,19 @@ public class LobbyManager : MonoBehaviour
         itemInformations[slot] = IIFL;
     }
 
-    public void LoadMap(int id)
+    private void LoadMap(int id)
     {
         if (GameManager.current != null)
             GameManager.current.LoadMap(id);
         else
             SceneManager.LoadSceneAsync(id, LoadSceneMode.Single);
+    }
+
+    private void LoadMapName(string name)
+    {
+        if (GameManager.current != null)
+            GameManager.current.LoadMapWithName(name);
+        else
+            SceneManager.LoadSceneAsync(name, LoadSceneMode.Single);
     }
 }

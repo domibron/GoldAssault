@@ -27,6 +27,8 @@ public class SaveData
 
     public int[] inventory = { 0, 0, 0, 0, 0 };
 
+    public float sensitivity = 1f;
+
     // public List<ToyData> toys;
     // public int toyCars;
     // public int toyDolls;

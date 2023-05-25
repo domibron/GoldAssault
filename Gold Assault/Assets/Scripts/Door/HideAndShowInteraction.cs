@@ -18,7 +18,9 @@ public class HideAndShowInteraction : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
         // singlize a value and also stops strange range bug.
-        maxRange = player.GetComponent<ResponsiveSelector>().maxDistance;
+        // maxRange = player.GetComponent<ResponsiveSelector>().maxDistance;
+
+        maxRange = 3f; //! hard set. this is bad if i want to change the distance.
 
 
         if (child == null)
